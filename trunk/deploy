@@ -1,0 +1,2 @@
+#!/bin/bash
+rsync -arvuz --rsh="ssh -p10314" /var/www/oa root@suley.net:/var/www/projects/ --exclude 'deploy'
