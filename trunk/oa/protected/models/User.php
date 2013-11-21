@@ -85,36 +85,144 @@ class User extends CActiveRecord{
     }
     return false;
   }
-  public function getPassword(){
-    return $this->password;
+  /**
+   * Get user list filter by conditions.
+   * @param mixed $filter
+   **/
+  public static function getList($filter){
+    if(empty($filter))
+      $filter = array('status'=>self::STATUS_ACTIVE);
+    return self::model()->findAllByAttributes($filter);
   }
-  public function getUsername(){
-    return $this->username;
+  /**
+   * Disable user
+   * @param mixed $userId user's id, can be both array or single int number
+   * @return bool
+   **/
+  public static function setDisabled($userId){
+    return self::model()->updateByPk($userId, array('status'=>self::STATUS_DISABLED));
   }
-  public static function getUserInfo($userId){
-    $manhour = Manhour::model()->findAllByAttributes(array('user_id'=>$userId));
-
-
+  /**
+   * Enable user by id
+   * @param mixed $userId user's id, can be both array or single int number
+   * @return bool
+   **/ 
+  public static function setEnable($userId){
+    return self::model()->updateByPK($userId, array('status'=>self::STATUS_ACTIVE));
   }
-  public static function getUserRealname($userId){
-   $user = User::model()->findByPk($userId);
-   return empty($user) ? '' : (empty($user->realname) ? $user->username : $user->realname);
+  /**
+   * Delete User
+   * @param mixed $userId user's id, can be both array or single int number
+   * @return bool
+   **/
+  public static function setDelete($userId){
+    return self::model()->updateByPk($userId, array('status'=>self::STATUS_DELETED));
+  }
+  /** 
+   * Get user's privileges
+   * @param string $role user's role,
+   * @return array $rolePrivs privileges list
+   **/
+  public static function getPriv($role){
+    if(empty($role))
+      $role = self::ROLE_STAFF;
+    switch($role){
+      //Administrator have all privileges
+      case self::ROLE_ADMIN:
+      $rolePrivs = array(
+        'Asset' => array('New', 'ApplyNew', 'Review', 'Delete', 'List', 'Borrow', 'Back', 'History'),
+        'Finance' => array('Reimbursement', 'ReimbursementEdit', 'ReimbursementList', 'ReimbursementReview'),
+        'Leave' => array('Out', 'Change', 'Review', 'Edit', 'New', 'List', 'ChangeReview'),
+        'Manhour' => array('Add', 'Edit', 'Report', 'Delete', 'Counting', 'Out', 'List', 'ReviewList', 'Review'),
+        'Notify' => array('Success', 'Failure', 'SetRead', 'SetAllRead'),
+        'Project' => array('New', 'List', 'Edit', 'Delete', 'Review'),
+        'Site' => array('Index', 'Error', 'Login', 'NewLogin', 'Logout', 'User', 'UserList'),
+        'Stat' => array('Total', 'Manhour', 'Reimbursement', 'Excercise', 'Project'),
+        'User' => array('AddExcercise', 'Mymanhour', 'Exercise', 'Notify', 'Project', 'CheckUsername', 'Delete')
+        );
+      break;
+      case self::ROLE_MANAGER:
+      $rolePrivs = array(
+        'Asset' => array('New', 'ApplyNew', 'Review', 'Delete', 'List', 'Borrow', 'Back', 'History'),
+        'Finance' => array('Reimbursement', 'ReimbursementEdit', 'ReimbursementList', 'ReimbursementReview'),
+        'Leave' => array('Out', 'Change', 'Review', 'Edit', 'New', 'List', 'ChangeReview'),
+        'Manhour' => array('Add', 'Edit', 'Report', 'Delete', 'Counting', 'Out', 'List', 'ReviewList', 'Review'),
+        'Notify' => array('Success', 'Failure', 'SetRead', 'SetAllRead'),
+        'Project' => array('New', 'List', 'Edit', 'Delete', 'Review'),
+        'Site' => array('Index', 'Error', 'Login', 'NewLogin', 'Logout', 'User', 'UserList'),
+        'Stat' => array('Total', 'Manhour', 'Reimbursement', 'Excercise', 'Project'),
+        'User' => array('AddExcercise', 'Mymanhour', 'Exercise', 'Notify', 'Project', 'CheckUsername', 'Delete')
+        );
+      break;
+      case self::ROLE_PRJMGR:
+      $rolePrivs = array(
+        'Leave' => array('Out', 'Change', 'Review', 'Edit', 'New', 'List', 'ChangeReview'),
+        'Manhour' => array('Add', 'Edit', 'Report', 'Delete', 'Counting', 'Out', 'List', 'ReviewList', 'Review'),
+        'Notify' => array('Success', 'Failure', 'SetRead', 'SetAllRead'),
+        'Project' => array('New', 'List', 'Edit', 'Delete', 'Review'),
+        'Site' => array('Index', 'Error', 'Login', 'NewLogin', 'Logout', 'User', 'UserList'),
+        'Stat' => array('Manhour', 'Reimbursement', 'Excercise', 'Project'),
+        'User' => array('AddExcercise', 'Mymanhour', 'Exercise', 'Notify', 'Project', 'CheckUsername', 'Delete')
+        );
+      break;
+      case self::ROLE_STAFF:
+      $rolePrivs = array(
+        'Finance' => array('Reimbursement', 'ReimbursementEdit', 'ReimbursementList'),
+        'Leave' => array('Out', 'Change', 'Review', 'Edit', 'New', 'List'),
+        'Manhour' => array('Add', 'Delete', 'Counting', 'Out', 'List'),
+        'Notify' => array('Success', 'Failure', 'SetRead', 'SetAllRead'),
+        'Project' => array('List'),
+        'Site' => array('Index', 'Error', 'Login', 'NewLogin', 'Logout', 'User'),
+        'User' => array('AddExcercise', 'Mymanhour', 'Exercise', 'Notify', 'Project', 'CheckUsername', 'Delete')
+        );
+      break;
+    }
+  }
+  /**
+   * Check if the user has the privlege to access spcific action
+   * @param string $role user's role
+   * @param string $controller the controller's 
+   * @param string $action the action's id
+   * @return bool whether the user has privilege or not.
+   **/
+  public static function checkPriv($role, $controller, $action){
+    $privs = self::getPriv($role);
+    if(isset($privs[$controller]) && in_array($action, $privs[$controller])){
+      return true;
+    }
+    return false;
+  }
+  /**
+   * Get user's manhour statistics information
+   * @param int $userId user's id
+   * @return array $stats
+   **/
+  public function getStats($userId = 0){
+    if(empty($userId))
+      $userId = Yii::app()->user->id;
+    $manhour = Manhour::model()->findAllByAttributes(array(
+     'user_id' => $userId
+     ));
+    $stats = array();
+    foreach($manhour as $item){
+     $stats[$item->type] += ($item->end_time - $item->start_time);
+   }
+   return $stats;
  }
- public static function getUserList(){
-   return self::model()->findAll();
- }
- public function getStats(){
-  $manhour = Manhour::model()->findAllByAttributes(array(
-   'user_id' => Yii::app()->user->id
-   ));
-  $stats = array();
-  foreach($manhour as $item){
-   $stats[$item->type] += ($item->end_time - $item->start_time);
- }
- return $stats;
-}
-public static function translateRole($role){
+ /**
+  * Translate the role into readable format
+  * @param string $role role's name
+  * @return string $role's readable 
+  **/
+ public static function translateRole($role){
   return self::$roleIntl[$role];
 }
+public function getPassword(){
+  return $this->password;
+}
+public function getUsername(){
+  return $this->username;
+}
+
 }
 ?>

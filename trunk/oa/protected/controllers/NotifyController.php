@@ -20,13 +20,13 @@ class NotifyController extends Controller{
         Yii::app()->user->setFlash('failure', $_GET['content']);
         $this->redirect(array($_GET['back']));
     }
-    public function setRead(){
+    public function actionSetRead(){
         if(Yii::app()->request->isAjaxRequest && isset($_POST['NotifyForm']['id'])){
             Notify::setRead($_POST['NotifyForm']['id']);
             echo "success";
         }
     }
-    public function setAllRead(){
+    public function actionSetAllRead(){
         if(Yii::app()->request->isAjaxRequest && isset($_POST['NotifyForm']['user_id'])){
             if(Yii::app()->user->id == intval($_POST['NotifyForm']['user_id'])){
                 Notify::setAllRead(Yii::app()->user->id);
