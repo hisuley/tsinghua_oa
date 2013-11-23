@@ -17,5 +17,11 @@ class TestController extends Controller{
     public function actionCal(){
         $this->render('calendar');
     }
+    public function actionActiveRecord(){
+    	$model = Asset::model()->findAll();
+    	foreach($model as $item){
+    		print_r($item->attributes);
+    	}
+    }
 }
 ?>

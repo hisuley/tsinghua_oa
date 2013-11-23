@@ -5,7 +5,7 @@
  * @version 1.0 last updated: 16:46 November 21 2013
  * @copyright © Beijing Backpacker Information Consulting Center
  **/
-class Asset extends CActiveRecord{
+class Asset extends ActiveRecord{
     /** Asset Status **/
     const STATUS_AVAILABLE = 'available';
     const STATUS_UNAVAILABLE = 'unavailable';
@@ -26,18 +26,13 @@ class Asset extends CActiveRecord{
             'history'=>array(self::HAS_MANY, 'AssetHistory', 'asset_id')
             );
     }
-    public function beforeSave(){
-        if($this->isNewRecord){
-          $this->create_time = strtotime('now');
-        }
-        return true;
-    }
+    
     /**
      * Add new asset data
      * @param array @data the data of asset array('user_id'=>'', 'name'=>'', 'amount'=>'', 'sn'=>'', 'price'=>'', 'status'=>'')
      * @return bool
      **/
-    public static function add(array $data){
+    public static function addNew(array $data){
         $model = new Asset;
         $model->attributes = $data;
         $model->status = self::STATUS_AVAILABLE;
@@ -50,7 +45,7 @@ class Asset extends CActiveRecord{
      * @param array $data
      * @return bool
      **/
-    public static function update(array $data){
+    public static function updateInfo(array $data){
         if(empty($data['id']))
             return false;
         $model = self::model()->findByPk($data['id']);

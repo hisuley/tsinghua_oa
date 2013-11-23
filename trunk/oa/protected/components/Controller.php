@@ -24,11 +24,15 @@ class Controller extends CController
 	 * Override the default method and add some useful judgements
 	 * @override 
 	 **/
-	public function beforeAction(){
-        if(Yii::app()->user->isGuest && $this->action->id != 'login'){
+	public function beforeAction($action){
+        if(Yii::app()->user->isGuest && $this->action->id != 'login' && $this->action->id != 'error'){
             $this->redirect(array('site/login', 'back'=>$this->id."/".$this->action->id));
         }else{
-            if(!User::checkPriv(Yii::app()->user->role, $this->id, $this->action->id)){
+        	if(empty(Yii::app()->user->role))
+        		$role = User::ROLE_GUEST;
+        	else
+        		$role = Yii::app()->user->role;
+            if(!User::checkPriv($role, $this->id, $this->action->id) && ($this->action->id != 'login')){
                 throw new CHttpException(401, '您没有权限操作。');
             }
         }

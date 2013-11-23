@@ -33,7 +33,7 @@ class Project extends CActiveRecord{
      * @param array $users the users who involved in this
      * @return bool
      **/
-    public static function add(array $data, array $users){
+    public static function addNew(array $data, array $users){
         if(isset($data)){
             $model = new Project;
             $model->attributes = $data;
@@ -55,7 +55,7 @@ class Project extends CActiveRecord{
      * @param array $users 
      * @return bool
      **/
-    public static function update(array $data, array $users){
+    public static function updateInfo(array $data, array $users){
         if(isset($data['id'])){
             $model = self::model()->findByPk($data['id']);
             unset($data['id']);

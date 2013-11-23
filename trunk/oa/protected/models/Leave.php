@@ -53,7 +53,7 @@ class Leave extends CActiveRecord{
      * Add new leave data
      * @param array $data the data of leave record
      **/
-    public static function add($data){
+    public static function addNew($data){
         $data['status'] = self::STATUS_PENDING;
         if($data['type'] == self::TYPE_NORMAL){
             if(!array_key_exists($data['sub_type'], self::$subTypeIntl)){
@@ -72,7 +72,7 @@ class Leave extends CActiveRecord{
      * @param array $data the data of leave record
      * @return bool
      **/
-    public static function update($data){
+    public static function updateInfo($data){
         if(empty($data['id']))
             return false;
         $model = self::model()->findByPk($data['id']);

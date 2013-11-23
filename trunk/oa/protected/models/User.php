@@ -28,12 +28,14 @@ class User extends CActiveRecord{
   const ROLE_STAFF = 'staff';
   const ROLE_PRJMGR = 'project-manager';
   const ROLE_MANAGER = 'manager';
+  const ROLE_GUEST = 'guest';
   public static $roleIntl = array(
     self::ROLE_ADMIN => '管理员',
     self::ROLE_PRESIDENT => '所长',
     self::ROLE_STAFF => '员工',
     self::ROLE_PRJMGR => '项目经理',
-    self::ROLE_MANAGER => '主管'
+    self::ROLE_MANAGER => '主管',
+    self::ROLE_GUEST => '游客'
     );
     // User status
   const STATUS_DISABLED = 'disabled';
@@ -78,7 +80,7 @@ class User extends CActiveRecord{
    * @param array $user = array('id'=>'', 'username'=>'', 'password'=>'', 'role'=>'', 'realname'=>'', 'email'=>'')
    * @return bool
    **/
-  public static function update(array $user){
+  public static function updateInfo(array $user){
     if(isset($user)){
       $model = self::model()->findByPk($user['id']);
       if(isset($user['password']) && (self::hashPassword($user['password']) == $user['password']) OR empty($user['password']))
@@ -182,6 +184,10 @@ class User extends CActiveRecord{
         'User' => array('AddExcercise', 'Mymanhour', 'Exercise', 'Notify', 'Project', 'CheckUsername', 'Delete')
         );
       break;
+      case self::ROLE_GUEST:
+      $rolePrivs = array(
+        'Site' => array('Error', 'Login', 'NewLogin', 'Logout') );
+      break;
     }
   }
   /**
@@ -193,7 +199,7 @@ class User extends CActiveRecord{
    **/
   public static function checkPriv($role, $controller, $action){
     $privs = self::getPriv($role);
-    if(isset($privs[$controller]) && in_array($action, $privs[$controller])){
+    if(isset($privs[ucfirst($controller)]) && in_array(ucfirst($action), $privs[$controller])){
       return true;
     }
     return false;

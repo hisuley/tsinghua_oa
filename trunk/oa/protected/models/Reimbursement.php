@@ -25,7 +25,7 @@ class Reimbursement extends CActiveRecord{
      * @param array $items
      * @return bool
      **/
-    public static function add(array $data, array $items){
+    public static function addNew(array $data, array $items){
         $model = new Reimbursement;
         $model->attributes = $data;
         if($model->save()){
@@ -45,7 +45,7 @@ class Reimbursement extends CActiveRecord{
      * @param array $items
      * @return bool
      **/
-    public static function update(array $data, array $items){
+    public static function updateInfo(array $data, array $items){
         if(isset($data['id']))
             $model = self::model()->findByPk($data['id']);
         unset($data['id']);
