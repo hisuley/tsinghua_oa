@@ -4,24 +4,28 @@
  * @var status applying|approved|rejected
  */
 class Leave extends CActiveRecord{
-    public $user_id, $type, $start_time, $end_time, $notes, $create_time, $status, $time, $sub_type;
+    public $user_id, $type, $start_time, $end_time, $notes, $create_time, $status, $time, $sub_type, $reviewer_id;
     /**
      * Define all type
      */
-    const CHANGE = 'change'; //调休
-    const NORMAL = 'normal'; //正常请假
+    const TYPE_CHANGE = 'change'; //调休
+    const TYPE_NORMAL = 'normal'; //正常请假
+    private static $typeIntl = array(
+        self::TYPE_NORMAL => '请假',
+        self::TYPE_CHANGE => '调休'
+        );
     /**
      * Define all status
      */
-    const APPROVED = 'approved'; //通过
-    const REJECTED = 'rejected';//拒绝
-    const PENDING = 'pending'; //等待审核
-    const RESUBMIT = 'resubmit'; //重新提交
-    public static $statusIntl = array(
-        self::APPROVED => '通过',
-        self::REJECTED => '拒绝',
-        self::PENDING => '等待审核',
-        self::RESUBMIT => '重新提交'
+    const STATUS_APPROVED = 'approved'; //通过
+    const STATUS_REJECTED = 'rejected';//拒绝
+    const STATUS_PENDING = 'pending'; //等待审核
+    const STATUS_RESUBMIT = 'resubmit'; //重新提交
+    private static $statusIntl = array(
+        self::STATUS_APPROVED => '通过',
+        self::STATUS_REJECTED => '拒绝',
+        self::STATUS_PENDING => '等待审核',
+        self::STATUS_RESUBMIT => '重新提交'
     );
     const SUBTYPE_CASUAL = 'casual', SUBTYPE_SICK = 'sick', SUBTYPE_YEAR = 'year', SUBTYPE_MARRIAGE = 'marriage', SUBTYPE_MATERNITY = 'maternity', SUBTYPE_HOME = 'home';
     public static $subTypeIntl = array(
@@ -35,9 +39,85 @@ class Leave extends CActiveRecord{
     }
     public function rules(){
         return array(
-          array('user_id, type, start_time, end_time, notes, create_time , status, time, sub_type', 'safe')
+          array('user_id, type, start_time, end_time, notes, create_time , status, time, sub_type, reviewer_id', 'safe')
         );
     }
+
+    public function beforeSave(){
+        if($this->isNewRecord){
+            $this->create_time = strtotime('now');
+        }
+        return parent::beforeSave();
+    }
+    /**
+     * Add new leave data
+     * @param array $data the data of leave record
+     **/
+    public static function add($data){
+        $data['status'] = self::STATUS_PENDING;
+        if($data['type'] == self::TYPE_NORMAL){
+            if(!array_key_exists($data['sub_type'], self::$subTypeIntl)){
+                return false;
+            }
+        }
+        $model = new Leave;
+        $model->attributes = $data;
+        if($model->save()){
+            return true;
+        }
+        return false;
+    }
+    /**
+     * Update leave data
+     * @param array $data the data of leave record
+     * @return bool
+     **/
+    public static function update($data){
+        if(empty($data['id']))
+            return false;
+        $model = self::model()->findByPk($data['id']);
+        unset($data['type']);
+        unset($data['sub_type']);
+        unset($data['status']);
+        unset($data['id']);
+        $model->attributes = $data;
+        // If this record is rejected, change the status to resubmit mode
+        if($model->status == self::STATUS_REJECTED)
+            self::setResubmit($model->id);
+        if($model->save()){
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Set status approved
+     * @param int $id the record's 
+     * @return bool
+     **/
+    public static function setApproved($id){
+        return self::model()->updateByPk($id, array('status'=>self::STATUS_APPROVED));
+    }
+
+    /**
+     * Set status reject
+     * @param int $id the record's id
+     * @return bool
+     **/
+    public static function setRejected($id){
+        return self::model()->updateByPk($id, array('status'=>self::STATUS_REJECTED));
+    }
+
+    /**
+     * Set status resubmit
+     * @param int $id the record's id
+     * @return bool
+     **/
+    private static function setResubmit($id){
+        return self::model()->updateByPk($id, array('status'=>self::STATUS_RESUBMIT));
+    }
+
+
 
     /**
      * 将状态翻译为中文
@@ -51,13 +131,22 @@ class Leave extends CActiveRecord{
     }
 
     /**
+     * Translate the type to chinese
+     * @param string $type the type of record
+     * @return string $translated_name the translated version of type
+     **/
+    public static function translateType($type){
+        return self::$typeIntl[$type];
+    }
+
+    /**
      * 格式化插入字段
-     * @param $item
+     * @param array $item
      * @return mixed
      */
     public static function formatCreation($item){
         $item->create_time = strtotime('now');
-        $item->status = self::PENDING;
+        $item->status = self::STATUS_PENDING;
         $item->start_time = strtotime($item->start_time);
         $item->end_time = strtotime($item->end_time);
         return $item;
