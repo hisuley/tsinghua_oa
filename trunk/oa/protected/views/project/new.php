@@ -64,8 +64,6 @@
            return false;
         });
     });
-
-
 </script>
 <div class="substance">
 <div class="leftside">
