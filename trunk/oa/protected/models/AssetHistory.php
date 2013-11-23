@@ -20,6 +20,11 @@ class AssetHistory extends CActiveRecord{
     		array('user_id, borrow_time, return_time, create_time, asset_id', 'safe')
     		);
     }
+    public function relations(){
+        return array(
+            'asset' => array(self::BELONGS_TO, 'Asset', 'asset_id')
+            );
+    }
 
     /**
      * 获取借用者姓名
