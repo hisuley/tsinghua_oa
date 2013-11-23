@@ -20,6 +20,59 @@ class Project extends CActiveRecord{
           'users' => array(self::HAS_MANY, 'ProjectUser', 'project_id')
         );
     }
+    public function beforeSave(){
+        if($this->isNewRecord){
+            $this->create_time = strtotime($this->create_time);
+        }
+        $this->sign_date = strtotime($this->sign_date);
+        return true;
+    }
+    /**
+     * Add new project record
+     * @param array $data the attributes of this project
+     * @param array $users the users who involved in this
+     * @return bool
+     **/
+    public static function add(array $data, array $users){
+        if(isset($data)){
+            $model = new Project;
+            $model->attributes = $data;
+            $model = self::reform($model);
+            if($model->save()){
+                foreach($users as $user){
+                    $userModel = new ProjectUser;
+                    $userModel->attributes = $user;
+                    $userModel->project_id = $model->id;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Update the project's information
+     * @param array $data the project's data
+     * @param array $users 
+     * @return bool
+     **/
+    public static function update(array $data, array $users){
+        if(isset($data['id'])){
+            $model = self::model()->findByPk($data['id']);
+            unset($data['id']);
+            $model->attributes = $data;
+            $model = self::syncPaymentTimes($model);
+            if($model->save()){
+                ProjectUser::model()->deleteAllByAttributes(array('project_id'=>$model->id));
+                foreach($users as $user){
+                    $userModel = new ProjectUser;
+                    $userModel->attributes = $user;
+                    $userModel->project_id = $model->id;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * 处理数据
@@ -86,21 +139,21 @@ class Project extends CActiveRecord{
        return false;
     }
     public static function getProjectList($role, $userId){
-        if(isset($role) && in_array($role, array('admin', 'superintendent', 'manager', 'project-manager', 'staff'))){
+        if(isset($role) && in_array($role, array(User::ROLE_STAFF, User::ROLE_PRJMGR, User::ROLE_MANAGER, User::ROLE_ADMIN, User::ROLE_PRESIDENT))){
             switch($role){
-                case 'admin':
+                case User::ROLE_ADMIN:
                     return self::model()->findAll();
                     break;
-                case 'superintendent':
+                case User::ROLE_PRESIDENT:
                     return self::model()->findAll();
                     break;
-                case 'project-manager':
+                case User::ROLE_PRJMGR:
                     return self::model()->findAll('user_id = :user_id', array(':user_id'=>$userId));
                     break;
-                case 'manager':
+                case User::ROLE_MANAGER:
                     return self::model()->findAll();
                     break;
-                case 'staff':
+                case User::ROLE_STAFF:
                     throw new CHttpException(401, '您的身份是普通用户，无法执行该操作，请确认您的权限是否可以查看项目。');
                     break;
             }
