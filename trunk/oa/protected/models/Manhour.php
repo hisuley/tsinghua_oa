@@ -1,5 +1,10 @@
 <?php
-
+/**
+ * The Manhour model which use to count manhour
+ * @author Suley <dearsuley@gmail.com>
+ * @version 1.0
+ * @copyright © Beijing Backpacker Information Consulting Center
+ **/
 class Manhour extends CActiveRecord{
     public $user_id,$type,$start_time,$end_time,$change_user, $reviewer_id, $is_review;
     public static function model($className = __CLASS__){
@@ -18,28 +23,23 @@ class Manhour extends CActiveRecord{
           'user'=>array(self::BELONGS_TO, 'User', 'user_id')
         );
     }
+    /** Define Type **/
     const TYPE_OUT = 'out';
     const TYPE_NORMAL = 'normal';
-    public static $typeIntl = array(
-      self::TYPE_NORMAL => '考勤',
-        self::TYPE_OUT => '外出'
-    );
+    public static $typeIntl = array(self::TYPE_NORMAL => '考勤',self::TYPE_OUT => '外出');
+    /** Define Status **/
     const STATUS_END = 'end';
     const STATUS_START = 'start';
     const STATUS_UNSIGNED = 'un-sign-off';
     const STATUS_COMPLETE = 'complete';
-    public static $statusIntl = array(
-      self::STATUS_COMPLETE => '审核通过',
-        self::STATUS_END => '结束，待审核',
-        self::STATUS_START => '进行中',
-        self::STATUS_UNSIGNED => '未签出'
-    );
+    public static $statusIntl = array(self::STATUS_COMPLETE => '审核通过',self::STATUS_END => '结束，待审核', self::STATUS_START => '进行中', self::STATUS_UNSIGNED => '未签出');
     /**
      * 自动清理未及时签出的记录
      */
     public function beforeFind(){
         self::autoSetSignoffState();
         Yii::log('cron job for cleaning un-stopped manhour counting record', 'info');
+        return true;
     }
 
     /**
@@ -49,13 +49,19 @@ class Manhour extends CActiveRecord{
      */
     public static function getManhourStatsList(array $users){
         if(empty($users)){
-            $users = Yii::app()->db->createCommand('SELECT * FROM users WHERE status = "'.User::ACTIVE.'"')->queryAll();
+            $users = Yii::app()->db->createCommand('SELECT * FROM users WHERE status = "'.User::STATUS_ACTIVE.'"')->queryAll();
         }
         foreach($users as &$user){
             $user['manhour'] = self::getManhourInfo($user['id']);
         }
         return $users;
     }
+    /**
+     * Get manhour list by filters
+     * @param array $filter
+     * @param array $order
+     * @param array $users
+     **/
     public static function getManhourStatsListByFilters(array $filters, array $order, array $users){
 
     }
