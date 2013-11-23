@@ -1,6 +1,14 @@
 <?php
-
+/**
+ * The asset management model
+ * @author Suley <dearsuley@gmail.com>
+ * @version 1.0 last updated: 16:46 November 21 2013
+ * @copyright © Beijing Backpacker Information Consulting Center
+ **/
 class Asset extends CActiveRecord{
+    /** Asset Status **/
+    const STATUS_AVAILABLE = 'available';
+    const STATUS_UNAVAILABLE = 'unavailable';
     public $user_id, $name, $amount, $sn, $status, $price, $create_time;
 	public static function model($className = __CLASS__){
 		return parent::model($className);
@@ -17,6 +25,40 @@ class Asset extends CActiveRecord{
         return array(
             'history'=>array(self::HAS_MANY, 'AssetHistory', 'asset_id')
             );
+    }
+    public function beforeSave(){
+        if($this->isNewRecord){
+          $this->create_time = strtotime('now');
+        }
+        return true;
+    }
+    /**
+     * Add new asset data
+     * @param array @data the data of asset array('user_id'=>'', 'name'=>'', 'amount'=>'', 'sn'=>'', 'price'=>'', 'status'=>'')
+     * @return bool
+     **/
+    public static function add(array $data){
+        $model = new Asset;
+        $model->attributes = $data;
+        $model->status = self::STATUS_AVAILABLE;
+        if($model->save()){
+            return true;
+        }
+    }
+    /**
+     * Update asset data
+     * @param array $data
+     * @return bool
+     **/
+    public static function update(array $data){
+        if(empty($data['id']))
+            return false;
+        $model = self::model()->findByPk($data['id']);
+        unset($data['id']);
+        $model->attributes = $data;
+        if($model->save())
+            return true;
+        return false;
     }
 
     /**
@@ -84,5 +126,6 @@ class Asset extends CActiveRecord{
         AssetHistory::model()->deleteAllByAttributes(array('asset_id'=>$id));
         return true;
     }
+
 }
 ?>
