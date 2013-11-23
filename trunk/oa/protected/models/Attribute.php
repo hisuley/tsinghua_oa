@@ -8,6 +8,9 @@
  **/
 
 class Attribute extends CActiveRecord{
+    /** Define Useful Attributes **/
+    const ATTR_PROJECT_CAT = 'project_cat';
+    const ATTR_CALENDAR_ITEM = 'calendar_item';
     public $attr_name, $attr_value, $user_id, $create_time;
     public static function model($className = __CLASS__){
         return parent::model($className);
@@ -19,6 +22,27 @@ class Attribute extends CActiveRecord{
         return array(
             array('attr_name, attr_value, user_id, create_time', 'safe')
         );
+    }
+    public function beforeSave(){
+        if($this->isNewRecord){
+            $this->create_time = strtotime('now');
+        }
+        return parent::beforeSave();
+    }
+    /**
+     * Add New attributes to database
+     * @param array $data the data of 
+     * @return bool
+     **/
+
+    public static function addAttr($data){
+        if(isset($data)){
+            $model = new Attribute;
+            $model->attributes = $data;
+            if($model->save())
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -36,6 +60,7 @@ class Attribute extends CActiveRecord{
                     break;
             }
         }
+        return false;
     }
 
     /**
