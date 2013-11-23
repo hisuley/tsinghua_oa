@@ -20,4 +20,18 @@ class Controller extends CController
 	 * for more details on how to specify this property.
 	 */
 	public $breadcrumbs=array();
+	/**
+	 * Override the default method and add some useful judgements
+	 * @override 
+	 **/
+	public function beforeAction(){
+        if(Yii::app()->user->isGuest && $this->action->id != 'login'){
+            $this->redirect(array('site/login', 'back'=>$this->id."/".$this->action->id));
+        }else{
+            if(!User::checkPriv(Yii::app()->user->role, $this->id, $this->action->id)){
+                throw new CHttpException(401, '您没有权限操作。');
+            }
+        }
+        return true;
+    }
 }
