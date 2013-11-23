@@ -89,8 +89,5 @@ class Notify extends CActiveRecord{
         }
         return false;
     }
-    public function getCal($mode){
-
-    }
 }
 ?>
