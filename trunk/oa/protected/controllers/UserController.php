@@ -1,12 +1,10 @@
 <?php
 
 class UserController extends Controller{
-    public function beforeAction(){
-        if(Yii::app()->user->isGuest && $this->action->id != 'login'){
-            $this->redirect(array('site/login', 'back'=>$this->id."/".$this->action->id));
-        }
-        return true;
+     public function beforeAction(){
+        parent::beforeAction();
     }
+
 	public function actionMymanhour(){
 		$this->render('manhour');
 	}

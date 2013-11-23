@@ -1,6 +1,9 @@
 <?php
 
 class AssetController extends Controller{
+    public function beforeAction(){
+        parent::beforeAction();
+    }
 	public function actionNew(){
         if(isset($_POST['AssetForm'])){
             $asset = new Asset();

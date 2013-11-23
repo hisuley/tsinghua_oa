@@ -2,10 +2,7 @@
 
 class LeaveController extends Controller{
     public function beforeAction(){
-        if(Yii::app()->user->isGuest && $this->action->id != 'login'){
-            $this->redirect(array('site/login', 'back'=>$this->id."/".$this->action->id));
-        }
-        return true;
+        parent::beforeAction();
     }
 	public function actionOut(){
 		if(isset($_POST['LeaveForm'])){
