@@ -1,6 +1,6 @@
 <?php
 /**
- * Created by Kimi Tourism.
+ * Created.
  * @author Suley<luzhang@jmlvyou.com>
  * @time 13-10-14
  * @version 1.0
