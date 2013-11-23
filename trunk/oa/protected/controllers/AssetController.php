@@ -1,12 +1,6 @@
 <?php
 
 class AssetController extends Controller{
-    public function beforeAction(){
-        if(Yii::app()->user->isGuest && $this->action->id != 'login'){
-            $this->redirect(array('site/login', 'back'=>$this->id."/".$this->action->id));
-        }
-        return true;
-    }
 	public function actionNew(){
         if(isset($_POST['AssetForm'])){
             $asset = new Asset();
