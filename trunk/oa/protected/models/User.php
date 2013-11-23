@@ -1,7 +1,13 @@
 <?php
-
+/**
+ * The user's model which use to support user login\add\edit
+ * @author Suley<dearsuley@gmail.com>
+ * @version 1.0 last updated: 18:23 November 21 2013
+ * @see <<User's Manual>>
+ * @copyright © Beijing Backpacker Information Consulting Center
+ **/
 class User extends CActiveRecord{
-	
+	//Basic setting for Yii model
 	public $id,$username,$role,$email, $realname;
 	public $password;
 	private static $salt = 'jwiejg298y3583uif2hu';
@@ -40,6 +46,7 @@ class User extends CActiveRecord{
     if($this->isNewRecord){
       $this->create_time = strtotime('now');
     }
+    return true;
   }
   public function validatePassword($password,$userPassword){
     Yii::log('User Attampts to login','warning','user.login');
@@ -81,7 +88,6 @@ class User extends CActiveRecord{
       $model->attributes = $user;
       if($model->save())
         return true;
-
     }
     return false;
   }
