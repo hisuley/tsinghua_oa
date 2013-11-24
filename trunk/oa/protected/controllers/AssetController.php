@@ -45,6 +45,7 @@ class AssetController extends Controller{
         else
             throw new CHttpException(500, '服务器错误，无法删除指定资产数据。');
     }
+
     /**
      * List asset
      * @param string $status the status of asset, available or unavailable
@@ -56,6 +57,11 @@ class AssetController extends Controller{
         $result = Asset::getList($filters);
 		$this->render('list', array('result'=>$result));
 	}
+
+    /**
+     * Borrow single asset
+     * @param int $id the asset which is being borrowed
+     **/
 	public function actionBorrow($id){
         if(isset($_POST['AssetHistoryForm'])){
             $result = Asset::borrow($_POST['AssetHistoryForm']);
@@ -69,6 +75,11 @@ class AssetController extends Controller{
             $this->render('borrow', array('result'=>$result));
         }
 	}
+
+    /**
+     * Return the asset
+     * @param int $id asset id
+     **/
 	public function actionBack($id){
         if(isset($id)){
             $result = Asset::returnBack($id);
@@ -88,6 +99,10 @@ class AssetController extends Controller{
             }
         }
 	}
+    
+    /**
+     * Get borrow history
+     **/
 	public function actionHistory(){
 		$this->render('history', array('result'=>Asset::getHistory()));
 	}
