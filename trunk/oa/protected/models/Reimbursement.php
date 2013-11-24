@@ -1,7 +1,12 @@
 <?php
-
+/**
+ * Reimbursement model
+ * @author Suley<dearsuley@gmail.com>
+ * @version 1.0 11/25/13 01:05:10
+ * @copyright © Beijing Backpacker Information Consulting Center
+ **/
 class Reimbursement extends CActiveRecord{
-	public $user_id,$type,$username,$name,$item, $price, $content, $approve_time, $create_time, $status;
+	public $user_id,$type,$username,$name,$item, $price, $content, $approve_time, $reviewer_id, $create_time, $status;
   // Reimbursement Status defination
   const STATUS_PENDING = 'pending';
   const STATUS_APPROVED = 'approved';
@@ -21,9 +26,40 @@ class Reimbursement extends CActiveRecord{
     }
     public function rules(){
     	return array(
-    		array('username, price, content, approve_time, type', 'safe')
+    		array('username, price, content, approve_time, reviewer_id,  type', 'safe')
     		);
     }
+
+    /**
+     * Set reimbursement status to Approved
+     * @param int $id the reimbursement record's id
+     * @param int $user the reviewer's id
+     * @return bool
+     **/
+    public static function setApproved($id, $user){
+      return self::model()->updateByPk($id,array('status'=>self::STATUS_APPROVED, 'reviewer_id'=>$user));
+    }
+
+    /**
+     * Set reimbursement status to rejected
+     * @param int $id the reimbursement record's id
+     * @param int $user the reviewer's id
+     * @return bool
+     **/
+    public static function setRejected($id, $user){
+      return self::model()->updateByPk($id,array('status'=>self::STATUS_REJECTED, 'reviewer_id'=>$user));
+    }
+
+    /**
+     * Set reimbursement status to resubmit
+     * @param int $id the reimbursement record's id
+     * @param int $user the reviewer's id
+     * @return bool
+     **/
+    public static function setResubmit($id){
+      return self::model()->updateByPk($id,array('status'=>self::STATUS_RESUBMIT));
+    }
+
     /**
      * Add new attributes
      * @param array $data
