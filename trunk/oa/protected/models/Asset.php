@@ -102,6 +102,14 @@ class Asset extends ActiveRecord{
         }
         return false;
     }
+    /**
+     * Get asset list by filters
+     * @param array $filters the filter's combination
+     * @return null|mixed
+     **/
+    public static function getList(array $filters){
+        return self::model()->findAllByAttributes($filters);
+    }
 
     /**
      * 获取借用记录
@@ -117,9 +125,10 @@ class Asset extends ActiveRecord{
      * @return bool
      */
     public static function deleteAsset($id){
-        self::model()->deleteByPk($id);
-        AssetHistory::model()->deleteAllByAttributes(array('asset_id'=>$id));
-        return true;
+        if(self::model()->deleteByPk($id) && AssetHistory::model()->deleteAllByAttributes(array('asset_id'=>$id)))
+            return true;
+        else
+            return false;
     }
 
 }
