@@ -35,24 +35,6 @@ class AssetController extends Controller{
         }else
             throw new CHttpException(404, '无效资产id，请检查链接来源。');
     }
-
-	public function actionReview($id = 0){
-		if(!empty($id)){
-            $result = Asset::model()->findByPk($id);
-            if(isset($_POST['AssetForm'])){
-                $result->id = $id;
-                $result->attributes = $_POST['AssetForm'];
-                if($result->save()){
-                    if(Yii::app()->request->isAjaxRequest){
-                        echo 'updated';
-                    }else{
-                        $this->redirect(array('notify/success', 'back'=>'asset/list', 'content'=>'审核成功！'));
-                    }
-                }
-            }
-            $this->render('review');
-        }
-	}
     public function actionDelete($id){
         Asset::model()->deleteByPk($id);
         AssetHistory::model()->deleteAllByAttributes(array('asset_id'=>$id));
