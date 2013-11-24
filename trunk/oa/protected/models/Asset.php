@@ -58,26 +58,24 @@ class Asset extends ActiveRecord{
 
     /**
      * 借出物品
-     * @param $id 该物品的ID
-     * @param $borrower 借用该物品人员id
-     * @param bool $lender 出借人（目前未使用）
-     * @return bool
+     * @param array $data 借阅信息
      */
-    public static function borrow($id, $borrower, $lender = false){
-        if(!empty($id)){
-            $model = self::model()->findByPk($id);
-            if(!empty($model) && $model->attributes['status'] == 'available'){
-                    $model->status = 'unavailable';
+    public static function borrow($data){
+        if(!empty($data['id'])){
+            $model = self::model()->findByPk($data['id']);
+            if(!empty($model) && $model->attributes['status'] == self::STATUS_AVAILABLE){
+                    $model->status = self::STATUS_UNAVAILABLE;
                     $history = new AssetHistory();
                     $history->borrow_time = strtotime('now');
                     $history->asset_id = $model->id;
-                    $history->user_id = $borrower;
-                    $history->create_time = strtotime('now');
-                    if($history->save())
+                    $history->user_id = $data['user_id'];
+                    if($history->save()){
                         $model->save();
+                        return true;
+                    }
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -88,8 +86,8 @@ class Asset extends ActiveRecord{
     public static function returnBack($id){
         if(!empty($id)){
             $model = self::model()->findByPk($id);
-            if(!empty($model) && $model->attributes['status'] == 'unavailable'){
-                $model->status = 'available';
+            if(!empty($model) && $model->attributes['status'] == self::STATUS_UNAVAILABLE){
+                $model->status = self::STATUS_AVAILABLE;
                 $history = AssetHistory::model()->find('asset_id = :asset_id AND return_time IS NULL', array(':asset_id'=>$id));
                 if(!empty($history)){
                     $history->return_time = strtotime('now');
