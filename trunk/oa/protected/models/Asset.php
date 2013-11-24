@@ -116,7 +116,7 @@ class Asset extends ActiveRecord{
      * @param $id
      * @return bool
      */
-    public static function deleteRelated($id){
+    public static function deleteAsset($id){
         self::model()->deleteByPk($id);
         AssetHistory::model()->deleteAllByAttributes(array('asset_id'=>$id));
         return true;
