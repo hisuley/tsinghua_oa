@@ -1,15 +1,21 @@
 <?php
-
+/**
+ * The asset management controller
+ * @author Suley <dearsuley@gmail.com>
+ * @version 1.0 11/25/13 00:39:05
+ * @copyright © Beijing Backpacker Information Consulting Center
+ **/
 class AssetController extends Controller{
     public function beforeAction(){
         parent::beforeAction();
     }
+    /**
+     * Add new asset record
+     * @version 1.0 11/24/13 22:43:08
+     **/
 	public function actionNew(){
         if(isset($_POST['AssetForm'])){
-            $asset = new Asset();
-            $asset->attributes = $_POST['AssetForm'];
-            $asset->status = 'available';
-            if($asset->save()){
+            if(Asset::addNew($_POST['AssetForm'])){
                 $this->redirect(array('notify/success', 'back'=>'asset/list', 'content'=>'资产添加成功！'));
             }else{
                 throw new CHttpException(500, '服务器错误，无法保存数据，请联系管理员。');
@@ -17,9 +23,19 @@ class AssetController extends Controller{
         }
 		$this->render('add');
 	}
-	public function actionApplyNew(){
+    /**
+     * Edit the asset data
+     * @version 1.0 11/24/13 22:41:24
+     * @param int $id the asset record's id
+     **/
+    public function actionEdit($id){
+        if(!empty($id)){
+            $result = Asset::model()->findByPk($id);
+            $this->render('add', array('result'=>$result));
+        }else
+            throw new CHttpException(404, '无效资产id，请检查链接来源。');
+    }
 
-	}
 	public function actionReview($id = 0){
 		if(!empty($id)){
             $result = Asset::model()->findByPk($id);
