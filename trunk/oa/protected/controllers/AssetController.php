@@ -35,13 +35,25 @@ class AssetController extends Controller{
         }else
             throw new CHttpException(404, '无效资产id，请检查链接来源。');
     }
+    /**
+     * Delete asset data
+     * @param int $id the asset's id
+     **/
     public function actionDelete($id){
-        Asset::model()->deleteByPk($id);
-        AssetHistory::model()->deleteAllByAttributes(array('asset_id'=>$id));
-        $this->redirect(array('notify/success', 'back'=>'asset/list', 'content'=>'删除成功'));
+        if(Asset::deleteAsset($id))
+            $this->redirect(array('notify/success', 'back'=>'asset/list', 'content'=>'删除成功'));
+        else
+            throw new CHttpException(500, '服务器错误，无法删除指定资产数据。');
     }
-	public function actionList(){
-        $result = Asset::model()->findAll();
+    /**
+     * List asset
+     * @param string $status the status of asset, available or unavailable
+     **/
+	public function actionList($status = false){
+        $filters = array();
+        if(empty($status))
+            $filters['status'] = $status;
+        $result = Asset::getList($filters);
 		$this->render('list', array('result'=>$result));
 	}
 	public function actionBorrow($id){
