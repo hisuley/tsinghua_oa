@@ -81,6 +81,7 @@ class Reimbursement extends ActiveRecord{
         } 
         return false;
     }
+
     /**
      * Update reimbusement record
      * @param array $data
@@ -91,6 +92,7 @@ class Reimbursement extends ActiveRecord{
         if(isset($data['id']))
             $model = self::model()->findByPk($data['id']);
         unset($data['id']);
+        unset($data['user_id']);
         $model->attributes = $data;
         if($model->save()){
             if(Reimbursement::model()->deleteAllByAttributes(array('reimbursement_id'=>$model->id))){
@@ -104,6 +106,31 @@ class Reimbursement extends ActiveRecord{
             return true;
         }
         return false;
+    }
+    /**
+     * Get reimbursement list by filters
+     * @param array $filters the filters
+     * @param string $role the user's role
+     * @param int $user user's id
+     * @version 1.0 11/25/13 03:07:27
+     **/
+    public static function getList(array $filters = array(), $role = User::ROLE_STAFF, $user = 0){
+      switch($role){
+        case User::ROLE_STAFF:
+          $filters['user_id'] = $user;
+          break;
+        case User::ROLE_PRJMGR:
+          if(empty($filters['user_id']))
+            $filters['user_id'] = Project::findUserUnderProject($user);
+          break;
+        case User::ROLE_MANAGER:
+          break;
+        case User::ROLE_PRESIDENT:
+          break;
+        case User::ROLE_ADMIN:
+          break;
+      }
+      return self::model()->findAllByAttributes($filters);
     }
 }
 ?>
