@@ -2,6 +2,12 @@
 
 class Reimbursement extends CActiveRecord{
 	public $user_id,$type,$username,$name,$item, $price, $content, $approve_time, $create_time, $status;
+  // Reimbursement Status defination
+  const STATUS_PENDING = 'pending';
+  const STATUS_APPROVED = 'approved';
+  const STATUS_REJECTED = 'rejected';
+  const STATUS_RESUBMIT = 'resubmit';
+
 	public static function model($className = __CLASS__){
 		return parent::model($className);
 	}
@@ -11,7 +17,6 @@ class Reimbursement extends CActiveRecord{
     public function relations(){
         return array(
           'item' => array(self::HAS_MANY, 'reimbursement_item', 'reimbursement_id')
-
         );
     }
     public function rules(){
