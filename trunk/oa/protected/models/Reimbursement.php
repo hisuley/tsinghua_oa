@@ -5,7 +5,7 @@
  * @version 1.0 11/25/13 01:05:10
  * @copyright © Beijing Backpacker Information Consulting Center
  **/
-class Reimbursement extends CActiveRecord{
+class Reimbursement extends ActiveRecord{
 	public $user_id,$type,$username,$name,$item, $price, $content, $approve_time, $reviewer_id, $create_time, $status;
   // Reimbursement Status defination
   const STATUS_PENDING = 'pending';
@@ -69,6 +69,7 @@ class Reimbursement extends CActiveRecord{
     public static function addNew(array $data, array $items){
         $model = new Reimbursement;
         $model->attributes = $data;
+        $model->status = self::STATUS_PENDING;
         if($model->save()){
             foreach($items as $item){
                 $itemModel = new ReimbursementItem;
