@@ -10,12 +10,5 @@ class ActiveRecord extends CActiveRecord{
         }
         return true;
     }
-    /**
-     * Test
-     **/
-    public function beforeFind(){
-    	$this->create_time = date('Y-m-d', $this->create_time);
-    	return true;
-    }
 }
 ?>

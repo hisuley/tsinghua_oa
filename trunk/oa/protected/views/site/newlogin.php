@@ -34,7 +34,7 @@
 	</div>
 <style type="text/css">
 body#bgimg{
-	background-image: url(<?php echo Yii::app()->request->baseUrl; ?>/images/elements/bg.png);
+	background-image: url("<?php echo Yii::app()->request->baseUrl; ?>/images/elements/bg.png");
 	filter:"progid:DXImageTransform.Microsoft.AlphaImageLoader(sizingMethod='scale')";
 	-moz-background-size:100% 100%;
 	background-size:100% 100%;
