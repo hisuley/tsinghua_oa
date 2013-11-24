@@ -108,21 +108,23 @@ class SiteController extends Controller
 	}
 	/**
 	 * Edit user information
+	 * @param int $id the user's id
 	 * @version 1.0
 	 **/
-    public function actionUser(){
-        if(empty($_GET['id'])){
+    public function actionUser($id = 0){
+        if(empty($id)){
             if(empty($_POST['UserForm'])){
                 $this->render('user');
             }else{
-                if(User::updateInfo($_POST['UserForm'])){
+            	$userData = $_POST['UserForm'];
+                if(User::register($userData)){
                 	$this->redirect(array('notify/success', 'back'=>'site/userlist', 'content'=>'用户保存成功！'));
                 }else{
                 	throw new CHttpException(500,'服务器错误。');
                 }
             }
         }else{
-            $result = User::model()->findByPk($_GET['id']);
+            $result = User::model()->findByPk($id);
             if(empty($_POST['UserForm'])){
                 if(!empty($result)){
                     $this->render('user', array('result'=>$result));
@@ -130,7 +132,9 @@ class SiteController extends Controller
                     throw new CHttpException(404, '无法找到你请求的用户。');
                 }
             }else{
-                if(User::register($_POST['UserForm'])){
+            	$userData = $_POST['UserForm'];
+            	$userData['id'] = $id;
+                if(User::updateInfo($_POST['UserForm'])){
                     $this->redirect(array('notify/success', 'back'=>'site/userlist', 'content'=>'修改用户信息成功！'));
                 }else{
                 	throw new CHttpException(500,'无法保存用户，存储过程发生严重错误。请联系管理员。');
