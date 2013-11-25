@@ -7,7 +7,7 @@
  * @copyright 
  **/
 
-class Notify extends CActiveRecord{
+class Notify extends ActiveRecord{
     /**
      * 数据库结构
      * @var $title 通知的标题
