@@ -1,14 +1,21 @@
 <?php
-
+/**
+ * Leave management
+ * @author Suley<dearsuley@gmail.com>
+ * @version 1.0 11/25/13 08:28:17
+ **/
 class LeaveController extends Controller{
-    public function beforeAction(){
-        parent::beforeAction();
-    }
+
+    /**
+     * Add out record
+     * @version 1.0 11/25/13 08:37:45
+     **/
 	public function actionOut(){
 		if(isset($_POST['LeaveForm'])){
-			$leave = new Leave();
-			$leave->attributes = $_POST['LeaveForm'];
-			if($leave->save()){
+            $data = $_POST['LeaveForm'];
+            $data['user_id'] = Yii::app()->user->id;
+            $data['type'] = Manhour::TYPE_OUT;
+			if(Manhour::addNew($data)){
 				$this->redirect(
 					array('notify/success', 
 						  'back'=>'leave/list',
@@ -18,17 +25,17 @@ class LeaveController extends Controller{
 			}else{
 				throw new CHttpException(500, '服务器错误');
 			}
-		}else{
-			$this->render('out');	
 		}
-		
+		$this->render('out');	
 	}
+
     //调休申请
     public function actionChange(){
         if(isset($_POST['LeaveForm'])){
-            $leave = new Leave();
-            $leave->attributes = $_POST['LeaveForm'];
-            if($leave->save()){
+            $data = $_POST['LeaveForm'];
+            $data['user_id'] = Yii::app()->user->id;
+            $data['type'] = Leave::TYPE_CHANGE;
+            if(Leave::addNew($data)){
                 $this->redirect(array('notify/success', 'back'=>'leave/list', 'content'=>"添加成功！"));
             }else{
                 throw new CHttpException(500, '服务器错误');
@@ -37,11 +44,15 @@ class LeaveController extends Controller{
         $this->render('change');
     }
 
-    public function actionReview(){
+    /**
+     * Review the leave data
+     * @param int $id the leave's id
+     * @return 
+     **/
+    public function actionReview($id){
         if(isset($_POST['LeaveForm'])){
-            $leave = Leave::model()->findByPk($_POST['LeaveForm']['id']);
-            $leave->attributes = $_POST['LeaveForm'];
-            if($leave->save()){
+            $data = $_POST['LeaveForm'];
+            if(Leave::setStatus($data['status'], $id, Yii::app()->user->id)){
                 if(Yii::app()->request->isAjaxRequest){
                     echo 'success';
                 }else{
@@ -57,16 +68,32 @@ class LeaveController extends Controller{
             //Ajax Request
         }
     }
+    /**
+     * Edit the leave data
+     * @param int $id leave record's id
+     **/
     public function actionEdit($id = false){
         if(!empty($id)){
-            $model = Leave::model()->findByPk($id);
+            if(empty($_POST['LeaveForm'])){
+                $model = Leave::model()->findByPk($id);
+                $this->render($model->type);
+            }else{
+
+            }
+            
         }
     }
+    /**
+     * Insert new common leave record
+     * @param string $type the type of leave
+     * @return bool
+     * @version 1.0 11/25/13 10:35:44
+     **/
 	public function actionNew($type = 'leave'){
         if(isset($_POST['LeaveForm'])){
-            $leave = new Leave();
-            $leave->attributes = $_POST['LeaveForm'];
-            if($leave->save()){
+            $data = $_POST['LeaveForm'];
+            $data['user_id'] = Yii::app()->user->id;
+            if(Leave::addNew($data)){
                 $this->redirect(array('notify/success', 'back'=>'leave/list', 'content'=>'添加成功！'));
             }else{
                 throw new CHttpException(500, '服务器错误，请联系管理员。');
@@ -80,7 +107,12 @@ class LeaveController extends Controller{
                 $this->render('change');
         }
 	}
-	public function actionList($type, $action){
+    /**
+     * Get Leave list
+     * @param array $filters
+     * @version 1.0 11/25/13 10:39:28
+     **/
+	public function actionList(array $filters = array()){
         $renderPage = 'review';
 		$filter = array();
         if(!empty($type) && $type != 'all')
