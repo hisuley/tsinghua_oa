@@ -23,12 +23,6 @@
 
 class ProjectController extends Controller
 {
-    public function beforeAction(){
-        if(Yii::app()->user->isGuest && $this->action->id != 'login'){
-            $this->redirect(array('site/login', 'back'=>$this->id."/".$this->action->id));
-        }
-        return true;
-    }
     public function actionNew()
     {
         $project = new Project();
@@ -36,21 +30,13 @@ class ProjectController extends Controller
             $this->redirect(array('notify/failure', 'back' => 'site/index', 'content' => '您无权执行此操作。'));
         }
         if (isset($_POST['ProjectForm'])) {
-            $project->attributes = $_POST['ProjectForm'];
-            $project->create_time = time();
-            $project = Project::format($project);
-            $project->user_id = Yii::app()->user->id;
-            if ($project->save()) {
-                if (isset($_POST['ProjectUserForm'])) {
-                    foreach ($_POST['ProjectUserForm'] as $projectUserForm) {
-                        $projectUser = new ProjectUser();
-                        $projectUser->attributes = $projectUserForm;
-                        $projectUser->project_id = $project->id;
-                        $projectUser->create_time = strtotime('now');
-                        $projectUser = ProjectUser::format($projectUser);
-                        $projectUser->save();
-                    }
-                }
+            $data = $_POST['ProjectForm'];
+            $data['user_id'] = Yii::app()->user->id;
+            if(empty($_POST['ProjectUserForm']))
+                $userData = $_POST['ProjectUserForm'];
+            else
+                $userData = array();
+            if (Project::addNew($data, $userData)){
                 $this->redirect(
                     array('notify/success',
                         'back' => 'project/list',
@@ -59,15 +45,8 @@ class ProjectController extends Controller
                     )
                 );
             } else {
-                $this->redirect(
-                    array('notify/failure',
-                        'back' => 'project/new',
-                        'title' => '添加失败',
-                        'content' => '项目添加失败，错误原因：无法保存数据。请联系管理员。'
-                    )
-                );
+                throw new CHttpException(500, '无法保存数据。');
             }
-
         } else {
             $this->render('new');
         }
@@ -84,23 +63,15 @@ class ProjectController extends Controller
     {
         if ($id) {
             if (isset($_POST['ProjectForm'])) {
-                $project = Project::model()->findByPk($id);
-                $project->attributes = $_POST['ProjectForm'];
-                $project = Project::format($project);
-                $project->save();
-                ProjectUser::model()->deleteAll('project_id = :project_id', array(':project_id' => $id));
-                if (isset($_POST['ProjectUserForm'])) {
-                    foreach ($_POST['ProjectUserForm'] as $projectUserForm) {
-                        $projectUser = new ProjectUser();
-                        $projectUser->attributes = $projectUserForm;
-                        $projectUser->project_id = $id;
-                        $projectUser->create_time = strtotime('now');
-                        $projectUser = ProjectUser::format($projectUser);
-                        $projectUser->save();
-                    }
+                $data = $_POST['ProjectForm'];
+                $userData = $_POST['ProjectUserForm'];
+                if(Project::updateInfo($data, $userData)){
+                    $this->redirect(array('notify/success', 'back' => 'project/list', 'content' => '编辑项目成功！'));
+                }else{
+                    throw new CHttpException(500, '编辑项目保存失败。');
                 }
-
-                $this->redirect(array('notify/success', 'back' => 'project/list', 'content' => '编辑项目成功！'));
+                
+                
             } else {
                 $result = Project::model()->findByPk($id);
                 $this->render('new', array('result' => $result));
@@ -112,8 +83,12 @@ class ProjectController extends Controller
     }
     public function actionDelete($id){
         if(!empty($id)){
-            Project::model()->deleteByPk($id);
-            $this->redirect(array('notify/success', 'back' => 'project/list', 'content' => '删除项目成功！'));
+            if(Project::deleteRelated($id)){
+                $this->redirect(array('notify/success', 'back' => 'project/list', 'content' => '删除项目成功！'));
+            }else{
+                throw new CHttpException(500, '无法删除项目。');
+            }
+
         }
     }
 
