@@ -5,7 +5,7 @@
  * @version 1.0
  * @copyright © Beijing Backpacker Information Cousulting Center
  **/
-class AssetHistory extends CActiveRecord{
+class AssetHistory extends ActiveRecord{
 	public $user_id, $borrow_time, $return_time, $create_time, $asset_id;
     public static function model($className = __CLASS__){
         return parent::model($className);
@@ -18,7 +18,7 @@ class AssetHistory extends CActiveRecord{
     		array('user_id, borrow_time, return_time, create_time, asset_id', 'safe')
     		);
     }
-    
+
     public function relations(){
         return array(
             'asset' => array(self::BELONGS_TO, 'Asset', 'asset_id')
