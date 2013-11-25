@@ -60,12 +60,11 @@ class ManhourController extends Controller{
 		 * */
 		if(isset($id)){
 			if(isset($_POST['ManhourForm'])){
-                $model = Manhour::model()->findByPk($id);
-                $model->start_time = strtotime($_POST['ManhourForm']['start_time']);
-                $model->end_time = strtotime($_POST['ManhourForm']['end_time']);
-                $model->reviewer_id = Yii::app()->user->id;
-                $model->status = 'complete';
-                if($model->save()){
+                $data = $_POST['ManhourForm'];
+                $data['id'] = $id;
+                $data['reviewer_id'] = Yii::app()->user->id;
+                $data['status'] = Manhour::STATUS_COMPLETE;
+                if(Manhour::updateInfo($data)){
                     $this->redirect(array('notify/success', 'back'=>'manhour/list', 'content'=>'工时数据修改成功。'));
                 }else{
                     throw new CHttpException(500, '服务器错误，请通知管理员并重试。');
@@ -81,7 +80,6 @@ class ManhourController extends Controller{
 				}//Can't find the id
 				else{
 					$userRole = Yii::app()->user->role;
-
 					if($userRole == 'project-manager'){
 						if(Project::isUserInProject(Yii::app()->user->id, $manhour->user_id)){
                             $this->render('edit', array('result'=>$manhour));
@@ -131,15 +129,15 @@ class ManhourController extends Controller{
 				$manhour->user_id = Yii::app()->user->id;
 				$manhour->start_time = time();
 				$manhour->create_time = time();
-				$manhour->status = 'start';
-				$manhour->type = 'normal';
+				$manhour->status = Manhour::STATUS_START;
+				$manhour->type = Manhour::TYPE_NORMAL;
 				if($manhour->save()){
 					echo 'success';
 				}
 			}else{
-				if(empty($manhour->end_time) && $_POST['type'] == 'end'){
+				if(empty($manhour->end_time) && $_POST['type'] == Manhour::STATUS_END){
 					$manhour->end_time = time();
-                    $manhour->status = 'end';
+                    $manhour->status = Manhour::STATUS_END;
 					$manhour->save();
 					echo 'end saved';
 				}else{
