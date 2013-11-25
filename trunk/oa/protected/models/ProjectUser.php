@@ -7,7 +7,7 @@
  * @copyright 
  **/
 
-class ProjectUser extends CActiveRecord{
+class ProjectUser extends ActiveRecord{
     public $user_id, $project_id, $role, $note, $create_time, $start_time, $end_time, $important, $notice;
     public static function model($className = __CLASS__){
         return parent::model($className);
