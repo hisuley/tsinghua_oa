@@ -1,6 +1,6 @@
 <?php
 
-class Project extends CActiveRecord{
+class Project extends ActiveRecord{
 	public $paid_price, $name, $cat,$sn,$user_id,$sign_date,$location,$total_price,$real_contract_price,$payment_times,$first_pay,$second_pay,$third_pay,$fourth_pay,$fifth_pay,$sixth_pay,$seventh_pay;
     // 项目常用属性
     const ATTR_CATEGORY = 'project_cat';
