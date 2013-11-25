@@ -131,26 +131,5 @@ class LeaveController extends Controller{
         }
 		$this->render($renderPage, array('result'=>$result));
 	}
-
-    //审批调休记录
-    public function actionChangeReview($id = null){
-        if(!empty($id) && !empty($_POST['LeaveForm'])){
-            $result = Leave::reviewLeave($id, $_POST['LeaveForm']['status']);
-            if(!empty($result)){
-                if(Yii::app()->request->isAjaxRequest){
-                    echo "success";
-                }else{
-                    $this->redirect(array('notify/success', 'back'=>'leave/changereviewlist', 'content'=>'审批成功'));
-                }
-            }else{
-                if(Yii::app()->request->isAjaxRequest){
-                    echo "failure";
-                }else{
-                    throw new CHttpException(500, '服务器错误');
-                }
-            }
-        }
-        throw new CHttpException(404, '无法找到您的资源。');
-    }
 }
 ?>
