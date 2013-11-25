@@ -21,11 +21,8 @@ class Project extends ActiveRecord{
         );
     }
     public function beforeSave(){
-        if($this->isNewRecord){
-            $this->create_time = strtotime($this->create_time);
-        }
         $this->sign_date = strtotime($this->sign_date);
-        return true;
+        return parent::beforeSave();
     }
     /**
      * Add new project record
