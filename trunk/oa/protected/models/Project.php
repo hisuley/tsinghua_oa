@@ -24,6 +24,7 @@ class Project extends ActiveRecord{
         $this->sign_date = strtotime($this->sign_date);
         return parent::beforeSave();
     }
+
     /**
      * Add new project record
      * @param array $data the attributes of this project
@@ -46,6 +47,17 @@ class Project extends ActiveRecord{
         }
         return false;
     }
+
+    /**
+     * Delete related data
+     * @param int $id id
+     **/
+    public static function deleteRelated($id){
+        if(self::model()->deleteByPk($id)){
+            ProjectUser::model()->deleteAllByAttributes(array('project_id'=>$id));
+        }
+    }
+
     /**
      * Update the project's information
      * @param array $data the project's data
