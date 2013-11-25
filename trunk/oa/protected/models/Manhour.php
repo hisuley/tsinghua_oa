@@ -5,7 +5,7 @@
  * @version 1.0
  * @copyright © Beijing Backpacker Information Consulting Center
  **/
-class Manhour extends CActiveRecord{
+class Manhour extends ActiveRecord{
     public $user_id,$type,$start_time,$end_time,$change_user, $reviewer_id, $is_review;
     public static function model($className = __CLASS__){
         return parent::model($className);
@@ -33,7 +33,7 @@ class Manhour extends CActiveRecord{
     const STATUS_UNSIGNED = 'un-sign-off';
     const STATUS_COMPLETE = 'complete';
     public static $statusIntl = array(self::STATUS_COMPLETE => '审核通过',self::STATUS_END => '结束，待审核', self::STATUS_START => '进行中', self::STATUS_UNSIGNED => '未签出');
-    
+
     /**
      * Add new manhour record
      * @param array $data the data of manhour record
@@ -47,6 +47,25 @@ class Manhour extends CActiveRecord{
             if($model->type == self::TYPE_NORMAL){
                 $model->status = self::STATUS_START;
             }
+            if($model->save()){
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Update the manhour information
+     * @param array $data the manhour record data
+     * @return bool
+     **/
+    public static function updateInfo(array $data = array()){
+        if(!empty($data)){
+            $model = self::model()->findByPk($data['id']);
+            unset($data['id']);
+            $data['start_time'] = strtotime($data['start_time']);
+            $data['end_time'] = strtotime($data['end_time']);
+            $model->attributes = $data;
             if($model->save()){
                 return true;
             }
