@@ -1,20 +1,30 @@
 <?php
-
+/**
+ * THe manhour controller
+ * @author Suley <dearsuley@gmail.com>
+ * @version 1.0 11/25/13 10:43:19
+ * @copyright ©Beijing Backpacker Information Consulting Center
+ **/
 class ManhourController extends Controller{
-    public function beforeAction(){
-        if(Yii::app()->user->isGuest && $this->action->id != 'login'){
-            $this->redirect(array('site/login', 'back'=>$this->id."/".$this->action->id));
-        }
-        return true;
-    }
+    /**
+     * Add new Manhour record
+     **/
 	public function actionAdd(){
 		if(Yii::app()->request->isAjaxRequest){
-
+            if(isset($_POST['ManhourForm'])){
+                $data = $_POST['ManhourForm'];
+                $data['user_id'] = Yii::app()->user->id;
+                if(Manhour::addNew($data)){
+                    echo 'success';
+                }else{
+                    echo 'failure';
+                }
+            }
 		}else{
 			if(isset($_POST['ManhourForm'])){
-				$manhour = new Manhour();
-				$manhour->attributes = $_POST['ManhourForm'];
-				if($manhour->save()){
+				$data = $_POST['ManhourForm'];
+                $data['user_id'] = Yii::app()->user->id;
+				if(Manhour::addNew($data)){
 					$this->redirect(
 						array(
 							'notify/success', 
