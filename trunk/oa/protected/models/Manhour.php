@@ -33,6 +33,27 @@ class Manhour extends CActiveRecord{
     const STATUS_UNSIGNED = 'un-sign-off';
     const STATUS_COMPLETE = 'complete';
     public static $statusIntl = array(self::STATUS_COMPLETE => '审核通过',self::STATUS_END => '结束，待审核', self::STATUS_START => '进行中', self::STATUS_UNSIGNED => '未签出');
+    
+    /**
+     * Add new manhour record
+     * @param array $data the data of manhour record
+     * @version 1.0 11/25/13 08:33:08
+     * @return bool
+     **/
+    public static function addNew(array $data = array()){
+        if(!empty($data)){
+            $model = new Manhour;
+            $model->attributes = $data;
+            if($model->type == self::TYPE_NORMAL){
+                $model->status = self::STATUS_START;
+            }
+            if($model->save()){
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * 自动清理未及时签出的记录
      */
