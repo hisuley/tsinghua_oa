@@ -3,7 +3,7 @@
  * Class Leave
  * @var status applying|approved|rejected
  */
-class Leave extends CActiveRecord{
+class Leave extends ActiveRecord{
     public $user_id, $type, $start_time, $end_time, $notes, $create_time, $status, $time, $sub_type, $reviewer_id;
     /**
      * Define all type
@@ -91,12 +91,27 @@ class Leave extends CActiveRecord{
     }
 
     /**
+     * set status
+     * @param int $id the record's id
+     * @param int $user user's id
+     * @return bool
+     **/
+    public static function setStatus($stauts, $id, $user = false){
+        if($status == self::STATUS_APPROVED){
+            return self::setApproved($id, $user);
+        }else{
+            $setStatus = "set".ucfirst($status);
+            return self::$setStatus($id);
+        }
+    }
+
+    /**
      * Set status approved
      * @param int $id the record's 
      * @return bool
      **/
-    public static function setApproved($id){
-        return self::model()->updateByPk($id, array('status'=>self::STATUS_APPROVED));
+    public static function setApproved($id, $user){
+        return self::model()->updateByPk($id, array('status'=>self::STATUS_APPROVED, 'reviewer_id' => $user));
     }
 
     /**
