@@ -7,9 +7,7 @@
  **/
 class SiteController extends Controller
 {
-    public function beforeAction($action){
-        parent::beforeAction($action);
-    }
+  
 
 	/**
 	 * Declares class-based actions.

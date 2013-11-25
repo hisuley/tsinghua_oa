@@ -140,6 +140,33 @@ class Project extends ActiveRecord{
         }
         return $users;
     }
+
+    public static function getUsersOfProject($projectId){
+        $result = ProjectUser::model()->findAllByAttributes(array('project_id'=>$projectId));
+        $users = array();
+        foreach($result as $user){
+            array_push($users, $user->user_id);
+        }
+        return $users;
+    }
+    public static function getProjectOfUserString($userId){
+        $result = self::getProjectOfUser($userId);
+        $name = '';
+        foreach($result as $project){
+            $name = $name." ".$project->name;
+        }
+        return $name;
+    }
+    public static function getProjectOfUser($userId){
+        $result = ProjectUser::model()->findAllByAttributes(array('user_id'=>$userId));
+        $projectList = array();
+        foreach($result as $item){
+            array_push($projectList, $item->project_id);
+        };
+        $criteria = new CDbCriteria;
+        $criteria->addInCondition('id', $projectList);
+        return self::model()->findAll($criteria);
+    }
     public static function isUserInProject($ownerId, $userId){
         if(!empty($ownerId) && !empty($userId)){
             $users = self::findUserUnderProject($ownerId);

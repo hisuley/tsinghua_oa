@@ -96,7 +96,7 @@ class Leave extends ActiveRecord{
      * @param int $user user's id
      * @return bool
      **/
-    public static function setStatus($stauts, $id, $user = false){
+    public static function setLeaveStatus($stauts, $id, $user = false){
         if($status == self::STATUS_APPROVED){
             return self::setApproved($id, $user);
         }else{

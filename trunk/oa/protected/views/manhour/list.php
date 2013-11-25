@@ -12,7 +12,7 @@
         </div>
 
         <p>单位：小时</p>
-        <table>
+        <table class="prettyNarrow">
             <thead>
                 <tr>
                     <th>编号</th>

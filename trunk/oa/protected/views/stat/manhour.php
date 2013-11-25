@@ -8,50 +8,35 @@
 							<a class="tittle3" href="#">统计</a>
 							<!--下拉选择-->
 							<div >
-								<div class="check_down check_down1">
-								<a href="#" onclick="">全部项目<img id="down" src="<?php echo Yii::app()->request->baseUrl; ?>/images/elements/down.png"></a>
-								<!--下拉单
-								<div>
-									<ul class="down_list">
-										<li>项目名称</li>
-										<li>项目名称</li>
-										<li>项目名称</li>
-										<li>项目名称</li>
-									</ul>
-								</div>
-								
-								</div>
-								<div>
-								内容-->
-								</div>
-								<div class="check_down check_down2" >
-								<a href="#" onclick="">2013/08/12<img id="down" src="<?php echo Yii::app()->request->baseUrl; ?>/images/elements/down.png"></a>
-								<!--下拉单
-								<div>
-									<ul class="down_list">
-										<li>项目名称</li>
-										<li>项目名称</li>
-										<li>项目名称</li>
-										<li>项目名称</li>
-									</ul>
-								</div>
-								
-								</div>
-								<div>
-								内容-->
-								</div>
-								<div class="radio-group anxiangmu">
-	  								<input  id="radio_one" type="radio" name="one" value="按项目统计" />
-	  								<label for="radio_one">按项目统计</label>
-	  								<input id="radio_two" type="radio" name="one" value="按人统计" />
-	  								<label for="radio_two">按人统计</label>
-	  							</div>
+								<form class="filters-form" action="<?php echo $this->createUrl('stat/manhour'); ?>" method="GET">
+									<input type="hidden" name="r" value="stat/manhour">
+									<div class="input-inline input-select">
+										<label>项目：</label>
+										<select name="filters[project]">
+											<option value="">全部</option>
+											<?php 
+											$projectList = Project::getProjectList(Yii::app()->user->role, Yii::app()->user->id);
+											foreach($projectList as $project){
+												echo "<option value='".$project->id."'";
+												echo !empty($filters['project']) ? (($project->id == $filters['project']) ? ' selected = "selected"' : '') : '';
+												echo ">".$project->name."</option>";
+											}
+											?>
+										</select>
+									</div>
+									<div class="input-inline input-text">
+										<label>起始时间</label>
+										<input type="text" class="datepicker inputlist3" name="filters[start_time]" value="<?php echo empty($filters['start_time']) ?  '' : $filters['start_time']; ?>">
+										<input type="text" class="datepicker inputlist3" name="filters[end_time]" value="<?php echo empty($filters['end_time']) ?  '' : $filters['end_time']; ?>">
+									</div>
+									<input type="submit" class="button" value="搜索">
+		  						</form>
 								
 							</div>
 							
 							<p>单位：小时</p>	
 							<!--按人统计-->
-							<table>
+							<table class="pretty" cellspacing="0">
 								<tbody>
 									<tr>
 										<th>项目名称</th>
@@ -59,63 +44,26 @@
 										<th>姓名</th>
 										<th>工时</th>
 										<th>加班</th>
-										<th>操作</th>
 									</tr>
-									<tr>
-										<td>某某项目名称</td>
-										<td>2013/06/25</td>
-										<td>王磊</td>
-										<td>30.5</td>
-										<td>10</td>
-										<td>
-											<a href="">同意</a>
-											<a href="">修改</a>
-										</td>
-									</tr>
-									<td>总计</td>
-									<td>————</td>
-									<td>————</td>
-									<td>30.5</td>
-									<td>10.5</td>
-									<td>————</td>
+									<?php foreach($result as $item){ 
+										$manhour = Manhour::calculateManhour($item);
+										echo "<tr>";
+										echo "<td>".Project::getProjectOfUserString($item->user_id)."</td>";
+										echo "<td>".date('Y-m-d H:i:s', $item->create_time)."</td>";
+										echo "<td>";
+										echo User::getUserRealname($item->user_id);
+										echo "</td><td>";
+										echo Manhour::translateManhour($manhour['manhour']);
+										echo "</td>";
+										echo "<td>".Manhour::translateManhour($manhour['overtime'])."</td>";
+										echo "</tr>";
+									 } ?>
+				
 								</tbody>
 							</table>
-
-							<!--按项目统计-->
-							<table>
-								<th></th>
-								<th>项目名称</th>
-								<th>填报时间</th>
-								<th>工时</th>
-								<th>加班</th>
-								<th>操作</th>
-								</tr>
-								<td>————</td>
-								<td>XXXXXXX</td>
-								<td>2013/06/25</td>
-								<td>30.5</td>
-								<td>10</td>
-								<td>
-									<a href="">同意</a>
-									<a href="">修改</a>
-								</td>
-								</tr>
-								<td>总计</td>
-								<td>————</td>
-								<td>————</td>
-								<td>30.5</td>
-								<td>10.5</td>
-								<td>10</td>
-								</tr>
-								<td>总工时</td>
-								<td colspan="5"></td>
-								
-							</table>
-						
 							<!--付款方式-->
 						
-  							<button class="submit_button button_lightblue" type="submit">提交</button>
-  						</div>
+    						</div>
 						<!--右侧选择-->
 						<div class="rightside rightside_tongji">
 							<h3 style="text-align:center">工时 加班 请假 
@@ -136,3 +84,8 @@
 						</div>
 						<div style="clear:both;float:none"></div>
 					</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('input.datepicker').datepicker();
+	});
+</script>

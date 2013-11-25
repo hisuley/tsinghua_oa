@@ -1,9 +1,6 @@
 <?php
 
 class FinanceController extends Controller{
-    public function beforeAction(){
-        parent::beforeAction();
-    }
     /**
      * Apply for new reimbursement
      * @version 1.0 11/25/13 02:40:47

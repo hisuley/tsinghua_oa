@@ -55,8 +55,8 @@
 									<li class="time"><a href="<?php echo $this->createUrl('manhour/out'); ?>">外出记录</a></li>
 									<li class="home"><a href="<?php echo $this->createUrl('leave/new'); ?>">请假申请</a></li>
 									<li class="lay"><a href="<?php echo $this->createUrl('leave/change'); ?>">调休申请</a></li>
-									<li class="time"><a href="<?php echo $this->createUrl('leave/list', array('type'=>Leave::NORMAL, 'action'=>'history')); ?>">请假记录</a></li>
-									<li class="time"><a href="<?php echo $this->createUrl('leave/list', array('type'=>Leave::CHANGE, 'action'=>'history')); ?>">调休记录</a></li>
+									<li class="time"><a href="<?php echo $this->createUrl('leave/list', array('type'=>Leave::TYPE_NORMAL, 'action'=>'history')); ?>">请假记录</a></li>
+									<li class="time"><a href="<?php echo $this->createUrl('leave/list', array('type'=>Leave::TYPE_CHANGE, 'action'=>'history')); ?>">调休记录</a></li>
 								</ul>
 							</li>
 							<li>项目与财务
@@ -70,8 +70,8 @@
 							<li>审批
 								<ul>
 									<li class="stime"><a href="<?php echo $this->createUrl('manhour/list', array('type'=>'all', 'action'=>'review')); ?>">工时审批</a></li>
-									<li class="ssports"><a href="<?php echo $this->createUrl('leave/list', array('type'=>Leave::NORMAL, 'action'=>'review')); ?>">请假审批</a></li>
-									<li class="swork"><a href="<?php echo $this->createUrl('leave/list', array('type'=>Leave::CHANGE, 'action'=>'review')); ?>">调休审批</a></li>
+									<li class="ssports"><a href="<?php echo $this->createUrl('leave/list', array('type'=>Leave::TYPE_NORMAL, 'action'=>'review')); ?>">请假审批</a></li>
+									<li class="swork"><a href="<?php echo $this->createUrl('leave/list', array('type'=>Leave::TYPE_CHANGE, 'action'=>'review')); ?>">调休审批</a></li>
 									<li class="snews"><a href="<?php echo $this->createUrl('finace/reimbursementlist'); ?>">报销审批</a></li>
 								</ul>
 							</li>

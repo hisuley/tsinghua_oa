@@ -8,9 +8,6 @@
  **/
 
 class TestController extends Controller{
-    public function beforeAction(){
-        return true;
-    }
     public function actionTestLeave(){
         var_dump(intval(Leave::getAvailHour(1)/3600));
     }
@@ -22,6 +19,16 @@ class TestController extends Controller{
     	foreach($model as $item){
     		print_r($item->attributes);
     	}
+    }
+    public function actionUrl(){
+        echo $this->createUrl('test/urltest', array('filter'=>array('shit'=>array('ok', 'no-ok'),'fuck'=>array())));
+    }
+    public function actionUrlTest(array $filter = array()){
+        print_r($filter);
+        echo 'ok';
+    }
+    public function actionTable(){
+        $this->render('table');
     }
 }
 ?>

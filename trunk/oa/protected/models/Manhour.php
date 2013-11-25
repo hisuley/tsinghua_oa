@@ -53,7 +53,7 @@ class Manhour extends ActiveRecord{
         }
         return false;
     }
-    
+
     /**
      * Update the manhour information
      * @param array $data the manhour record data
@@ -264,6 +264,42 @@ class Manhour extends ActiveRecord{
             return true;
         }
         return false;
+    }
+
+    /**
+     * Get manhour stats array
+     **/
+    public static function getManhourStatInfo(array $filters = array()){
+        $criteria = new CDbCriteria;
+        //Filters, by project
+        if(!empty($filters['project'])){
+            $users = Project::getUsersOfProject($filters['project']);
+            $criteria->addInCondition('user_id', $users);
+        }
+        if(!empty($filters['start_time'])){
+            $criteria->addCondition("create_time >= ".strtotime($filters['start_time']));
+        }
+        if(!empty($filters['end_time'])){
+            $criteria->addCondition("create_time <= ".strtotime($filters['end_time']));
+        }
+        return self::model()->findAll($criteria);
+    }
+
+    public static function translateManhour($time){
+        $hour = intval($time/3600);
+        $minutes = intval(($time%3600)/60);
+        $seconds = intval(($time%60));
+        $return = '';
+        if(!empty($hour))
+            $return = $hour."时";
+        if(!empty($minutes))
+            $return = $return.$minutes."分";
+        if(!empty($seconds))
+            $return = $return.$seconds."秒";
+        if(empty($return)){
+            $return = '0';
+        }
+        return $return;
     }
 }
 ?>

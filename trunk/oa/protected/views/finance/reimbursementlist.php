@@ -8,7 +8,7 @@
 							<a class="tittle3" href="#">统计</a>
 							<!--下拉选择-->
 
-							<table>
+							<table class="prettyNarrow">
 								<tr>
 									<th>编号</th>
 									<th>负责人</th>
@@ -20,7 +20,8 @@
 									<th>状态</th>
 									<th>操作</th>
 								</tr>
-								<?php foreach($result as $item){
+								<?php 
+								foreach($result as $item){
 									echo "<tr>";
 									echo "<td>".$item->id."</td>";
 									echo "<td>".$item->username."</td>";

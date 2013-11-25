@@ -229,6 +229,13 @@ public function getPassword(){
 public function getUsername(){
   return $this->username;
 }
-
+public static function getUserRealname($id){
+  $result = self::model()->findByPk($id);
+  if(!empty($result->realname)){
+      return $result->realname;
+      }else{
+        return $result->username;
+      }
+  }
 }
 ?>

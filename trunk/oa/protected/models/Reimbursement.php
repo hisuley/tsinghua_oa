@@ -47,7 +47,7 @@ class Reimbursement extends ActiveRecord{
      * @return bool
      **/
     public static function setApproved($id, $user){
-      return self::model()->updateByPk($id,array('status'=>self::STATUS_APPROVED, 'reviewer_id'=>$user));
+      return self::model()->updateByPk($id,array('status'=>self::STATUS_APPROVED,'approve_time' => strtotime('now'), 'reviewer_id'=>$user));
     }
 
     /**
