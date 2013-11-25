@@ -7,7 +7,7 @@
  * @copyright 
  **/
 
-class Attribute extends CActiveRecord{
+class Attribute extends ActiveRecord{
     /** Define Useful Attributes **/
     const ATTR_PROJECT_CAT = 'project_cat';
     const ATTR_CALENDAR_ITEM = 'calendar_item';
