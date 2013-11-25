@@ -1,12 +1,10 @@
 <?php
-
+/**
+ * Notify Controller
+ * @author Suley<dearsuley@gmail.com>
+ * @version 1.0 11/25/13 11:31:11
+ **/
 class NotifyController extends Controller{
-    public function beforeAction(){
-        if(Yii::app()->user->isGuest && $this->action->id != 'login'){
-            $this->redirect(array('site/login', 'back'=>$this->id."/".$this->action->id));
-        }
-        return true;
-    }
 	public function actionSuccess(){
 		Yii::app()->user->setFlash('success', $_GET['content']);
 		$this->redirect(array($_GET['back']));
