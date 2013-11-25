@@ -1,6 +1,6 @@
 <?php
 
-class Exercise extends CActiveRecord{
+class Exercise extends ActiveRecord{
     public $user_id, $time, $create_time;
     public static function model($className = __CLASS){
         return parent::model($className);
