@@ -29,6 +29,16 @@ class Reimbursement extends ActiveRecord{
     		array('username, price, content, approve_time, reviewer_id,  type', 'safe')
     		);
     }
+    /**
+     * Global wrapper of setting status
+     * @param string $status the status
+     * @param int $user the reviewer's id
+     * @return bool
+     **/
+    public static function setStatus($status, $id, $user){
+      $setStatus = 'set'.ucfirst($status);
+      self::$setStatus($id,$user);
+    }
 
     /**
      * Set reimbursement status to Approved
