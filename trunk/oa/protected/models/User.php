@@ -6,7 +6,7 @@
  * @see <<User's Manual>>
  * @copyright © Beijing Backpacker Information Consulting Center
  **/
-class User extends CActiveRecord{
+class User extends ActiveRecord{
 	//Basic setting for Yii model
 	public $id,$username,$role,$email, $realname;
 	public $password;
@@ -43,12 +43,6 @@ class User extends CActiveRecord{
   const STATUS_DELETED = 'deleted';
   public function checkAccess($role){
 
-  }
-  public function beforeSave(){
-    if($this->isNewRecord){
-      $this->create_time = strtotime('now');
-    }
-    return true;
   }
   public function validatePassword($password,$userPassword){
     Yii::log('User Attampts to login','warning','user.login');
