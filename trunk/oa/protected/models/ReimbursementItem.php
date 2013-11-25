@@ -1,6 +1,6 @@
 <?php
 
-class ReimbursementItem extends CActiveRecord{
+class ReimbursementItem extends ActiveRecord{
     public $reimbursement_id,$name,$total_price,$single_price,$amount, $notes, $create_time;
     public static function model($className = __CLASS__){
         return parent::model($className);
