@@ -6,9 +6,7 @@
  * @copyright © Beijing Backpacker Information Consulting Center
  **/
 class AssetController extends Controller{
-    public function beforeAction(){
-        parent::beforeAction();
-    }
+
     /**
      * Add new asset record
      * @version 1.0 11/24/13 22:43:08
