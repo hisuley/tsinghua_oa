@@ -91,7 +91,7 @@ class User extends ActiveRecord{
    * Get user list filter by conditions.
    * @param mixed $filter
    **/
-  public static function getList($filter){
+  public static function getList($filter = array()){
     if(empty($filter))
       $filter = array('status'=>self::STATUS_ACTIVE);
     return self::model()->findAllByAttributes($filter);
@@ -234,6 +234,8 @@ public static function getUserRealname($id){
   if(!empty($result->realname)){
       return $result->realname;
       }else{
+        if(empty($result))
+          return '';
         return $result->username;
       }
   }
