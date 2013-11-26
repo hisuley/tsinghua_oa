@@ -222,11 +222,11 @@ class Leave extends ActiveRecord{
      * @return array|CActiveRecord|mixed|null
      */
     public static function getList($role, $user, $filters = array(), $page = false){
-        if($role == User::STAFF){
+        if($role == User::ROLE_STAFF){
             return self::model()->findAllByAttributes($filters, 'user_id = :user_id', array(':user_id'=>$user));
-        }elseif($role == User::MANAGER || $role == User::ADMIN || $role == User::PRESIDENT){
+        }elseif($role == User::ROLE_MANAGER || $role == User::ROLE_ADMIN || $role == User::ROLE_PRESIDENT){
             return self::model()->findAllByAttributes($filters);
-        }elseif($role == User::PRJMGR){
+        }elseif($role == User::ROLE_PRJMGR){
             $users = Project::findUserUnderProject($user);
             array_push($users, $user);
             $criteria = new CDbCriteria();
