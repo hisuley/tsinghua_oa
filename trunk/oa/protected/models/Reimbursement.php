@@ -80,7 +80,7 @@ class Reimbursement extends ActiveRecord{
         $model = new Reimbursement;
         $model->attributes = $data;
         $model->status = self::STATUS_PENDING;
-        if($model->save()){
+        if($model->save() && !empty($items)){
             foreach($items as $item){
                 $itemModel = new ReimbursementItem;
                 $itemModel->attributes = $item;
