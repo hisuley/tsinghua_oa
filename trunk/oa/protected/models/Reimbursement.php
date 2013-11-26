@@ -76,7 +76,7 @@ class Reimbursement extends ActiveRecord{
      * @param array $items
      * @return bool
      **/
-    public static function addNew(array $data, array $items){
+    public static function addNew(array $data, array $items = array()){
         $model = new Reimbursement;
         $model->attributes = $data;
         $model->status = self::STATUS_PENDING;
@@ -98,7 +98,7 @@ class Reimbursement extends ActiveRecord{
      * @param array $items
      * @return bool
      **/
-    public static function updateInfo(array $data, array $items){
+    public static function updateInfo(array $data, array $items = array()){
         if(isset($data['id']))
             $model = self::model()->findByPk($data['id']);
         unset($data['id']);
