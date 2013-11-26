@@ -61,7 +61,7 @@ class Asset extends ActiveRecord{
      * @param array $data 借阅信息
      */
     public static function borrow($data){
-        if(!empty($data['id'])){
+        if(!empty($data['asset_id'])){
             $model = self::model()->findByPk($data['asset_id']);
             if(!empty($model) && $model->attributes['status'] == self::STATUS_AVAILABLE){
                     $model->status = self::STATUS_UNAVAILABLE;
