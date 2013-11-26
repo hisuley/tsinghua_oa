@@ -26,7 +26,7 @@ class Reimbursement extends ActiveRecord{
     }
     public function rules(){
     	return array(
-    		array('username, price, content, approve_time, reviewer_id,  type', 'safe')
+    		array('user_id, item, name,  status, username, price, content, approve_time, reviewer_id,  type', 'safe')
     		);
     }
     /**
@@ -80,6 +80,8 @@ class Reimbursement extends ActiveRecord{
         $model = new Reimbursement;
         $model->attributes = $data;
         $model->status = self::STATUS_PENDING;
+        if(is_array($model->content))
+            $model->content = serialize($model->content);
         if($model->save()){
             if(!empty($items)){
                 foreach($items as $item){
@@ -107,6 +109,8 @@ class Reimbursement extends ActiveRecord{
         unset($data['id']);
         unset($data['user_id']);
         $model->attributes = $data;
+        if(is_array($model->content))
+            $model->content = serialize($model->content);
         if($model->save()){
             if(Reimbursement::model()->deleteAllByAttributes(array('reimbursement_id'=>$model->id))){
                 foreach($items as $item){
