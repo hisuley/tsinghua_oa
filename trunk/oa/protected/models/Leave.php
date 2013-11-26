@@ -254,5 +254,7 @@ class Leave extends ActiveRecord{
     public static function getTimeLength($start, $end){
         return intval(($end - $start)/3600);
     }
+
+    
 }
 ?>
