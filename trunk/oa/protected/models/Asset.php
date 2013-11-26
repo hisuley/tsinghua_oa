@@ -62,7 +62,7 @@ class Asset extends ActiveRecord{
      */
     public static function borrow($data){
         if(!empty($data['id'])){
-            $model = self::model()->findByPk($data['id']);
+            $model = self::model()->findByPk($data['asset_id']);
             if(!empty($model) && $model->attributes['status'] == self::STATUS_AVAILABLE){
                     $model->status = self::STATUS_UNAVAILABLE;
                     $history = new AssetHistory();
