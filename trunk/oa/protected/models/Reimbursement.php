@@ -80,13 +80,16 @@ class Reimbursement extends ActiveRecord{
         $model = new Reimbursement;
         $model->attributes = $data;
         $model->status = self::STATUS_PENDING;
-        if($model->save() && !empty($items)){
-            foreach($items as $item){
-                $itemModel = new ReimbursementItem;
-                $itemModel->attributes = $item;
-                $itemModel->reimbursement_id = $model->id;
-                $itemModel->save();
+        if($model->save()){
+            if(!empty($items)){
+                foreach($items as $item){
+                    $itemModel = new ReimbursementItem;
+                    $itemModel->attributes = $item;
+                    $itemModel->reimbursement_id = $model->id;
+                    $itemModel->save();
+                }
             }
+            
             return true;
         } 
         return false;
