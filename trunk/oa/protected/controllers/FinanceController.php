@@ -6,7 +6,7 @@ class FinanceController extends Controller{
      * @version 1.0 11/25/13 02:40:47
      **/
 	public function actionReimbursement(){
-		if(isset($_POST['ReimbursementForm']) && isset($_POST['ReimbursementItemForm'])){
+		if(isset($_POST['ReimbursementForm'])){
             $data = $_POST['ReimbursementForm'];
             $data['user_id'] = Yii::app()->user->id;
             $itemData = $_POST['ReimbursementItemForm'];
