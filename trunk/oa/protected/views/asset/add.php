@@ -13,7 +13,7 @@
 		<label>申请人:</label>
 		<select name="AssetForm[user_id]">
 			<?php
-			$users = User::getUserList();
+			$users = User::getList();
 			foreach($users as $user){
 				echo "<option value='".$user->id."'>".$user->realname."</option>";
 			}
