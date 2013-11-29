@@ -255,6 +255,24 @@ class Leave extends ActiveRecord{
         return intval(($end - $start)/3600);
     }
 
-    
+    /**
+     * Get the total days of user
+     * @param int $startTime unix timestamp
+     * @param int $endTime unix timestamp
+     * @param int $userId the user's 
+     * @return int timestamp
+     **/
+    public static function getUserLeaveDays($startTime, $endTime, $userId){
+        $totalDays = 0;
+        $criteria = new CDbCriteria;
+        $criteria->addCondition('user_id', $userId);
+        $criteria->addBetweenCondition('start_time', $startTime, $endTime, 'AND');
+        $criteria->addBetweenCondition('end_time', $startTime, $endTime, 'AND');
+        $result = self::model()->findAll($criteria);
+        foreach($result as $record){
+            $totalDays += abs($record->end_time - $record->start_time);
+        }
+        return $totalDays;
+    }
 }
 ?>
