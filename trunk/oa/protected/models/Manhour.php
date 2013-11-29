@@ -358,11 +358,18 @@ class Manhour extends ActiveRecord{
         $criteria->addBetweenCondition('end_time', $startDate, $endDate, 'AND');
         $result = self::model()->findAll($criteria);
         if($combo){
-
+            $result = self::statByDateHelperUsersSummary($result, $startDate, $endDate);
         }
         return $result;
     }
 
+    /**
+     * handle the users's manhour record data and transfer to countable format
+     * @param CActiveRecord $result the result record
+     * @param int $startDate
+     * @param int $endDate
+     * @return array $users 
+     **/
     public static function statByDateHelperUsersSummary($result, $startDate, $endDate){
         $users = array();
         foreach($result as $record){
@@ -375,8 +382,14 @@ class Manhour extends ActiveRecord{
                 $users[$record->user_id]['late_count']++;
             if(self::checkExitHelper($record))
                 $users[$record->user_id]['exit_count']++;
+            if(self::checkOverTimeHelper($record))
+                $users[$record->user_id]['overtime_count']++;
             $users[$record->user_id]['attendance_count']++;
         }
+        foreach($users as $id=>&$user){
+            $users[$id]['leave_count'] = Leave::getUserLeaveDays($startDate, $endDate, $id);
+        }
+        return $users;
     }
 
     public static function checkLateHelper($record){
