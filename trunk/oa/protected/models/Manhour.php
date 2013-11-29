@@ -340,12 +340,30 @@ class Manhour extends ActiveRecord{
 
     }
 
+    /**
+     * Stats by user
+     * @param int $user_id
+     * @param int $startDate
+     * @param int $endDate
+     **/
     public static function statByUser($userId, $startDate, $endDate, $filters = array()){
         $criteria = new CDbCriteria;
         $criteria->addCondition('user_id', $userId);
         $criteria->addBetweenCondition('start_time', $startDate, $endDate, 'AND');
         $criteria->addBetweenCondition('end_time', $startDate, $endDate, 'AND');
-        $result = self::model()->findAll($criteria);
+        $manhourResult = self::model()->findAll($criteria);
+        $result = array('manhour'=>array(), 'stats'=>array('attendance_count'=>0, 'late_count'=>0, 'exit_count'=>0, 'overtime_count'=>0, 'leave_count'=>0));
+        foreach($manhourResult as $record){
+            if(self::checkLateHelper($record))
+                $result['stats']['late_count']++;
+            if(self::checkExitHelper($record))
+                $result['stats']['exit_count']++;
+            if(self::checkOverTimeHelper($record))
+                $result['stats']['overtime_count']++;
+            $result['stats']['attendance_count']++;
+            $result['manhour'][$record->id] = $record;
+        }
+        return $result;
      }
 
     /**
