@@ -302,12 +302,20 @@ class Manhour extends ActiveRecord{
         return $return;
     }
 
-    /** Manhour Staticstic Method **/
+    /* Manhour Staticstic Method */
+
+    /**
+     * Get Today's Manhour stat
+     * @return CActiveRecord the records of today's manhour
+     **/
     public static function statOfToday(){
         $currentDate = strtotime(date('Y-m-d')." +8 hours");
         $nextDate    = strtotime(date('Y-m-d')." +1 days +8 hours");
-        
+        $result = self::statByDate($currentDate, $nextDate);
+        return $result;
     }
+
+    
     public static function statByProject(array $filters = array()){
 
     }
