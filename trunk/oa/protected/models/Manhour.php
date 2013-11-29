@@ -23,6 +23,9 @@ class Manhour extends ActiveRecord{
           'user'=>array(self::BELONGS_TO, 'User', 'user_id')
         );
     }
+    /** Define Late-time **/
+    const LATE_TIME = '1000';
+    const EXIT_TIME = '1800';
     /** Define Type **/
     const TYPE_OUT = 'out';
     const TYPE_NORMAL = 'normal';
@@ -330,7 +333,7 @@ class Manhour extends ActiveRecord{
         $nextTime = $year."-".$month."-1";
         $currentDate = strtotime($currentTime);
         $nextDate = strtotime($nextTime);
-        $result = self::statByDate($currentDate, $nextDate);
+        $result = self::statByDate($currentDate, $nextDate, true);
     }
 
     public static function statByProject(array $filters = array()){
@@ -348,12 +351,45 @@ class Manhour extends ActiveRecord{
     /**
      * Filter by date
      **/
-    public static function statByDate($startDate, $endDate, array $filters = array()){
+    public static function statByDate($startDate, $endDate, $combo = false, array $filters = array()){
         $criteria  = new CDbCriteria;
         $criteria->addBetweenCondition('start_time', $startDate, $endDate, 'AND');
         $criteria->addBetweenCondition('end_time', $startDate, $endDate, 'AND');
         $result = self::model()->findAll($criteria);
+        if($combo){
+
+        }
         return $result;
+    }
+
+    public static function statByDateHelperUsersSummary($result, $startDate, $endDate){
+        $users = array();
+        foreach($result as $record){
+            if(!isset($users[$record->user_id])){
+                $users[$record->user_id] = array(
+                    'late_count'=>0, 'exit_count'=>0, 'attendance_count'=>0, 'overtime_count'=>0, 'leave_count'=>0
+                    );
+            }
+            if(self::checkLateHelper($record))
+                $users[$record->user_id]['late_count']++;
+            if(self::checkExitHelper($record))
+                $users[$record->user_id]['exit_count']++;
+        }
+    }
+
+    public static function checkLateHelper($record){
+        if(intval(date('Hs', $record->start_time)) > intval(self::LATE_TIME)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public static function checkExitHelper($record){
+        if(intval(date('Hs', $record->end_time)) < intval(self::EXIT_TIME))
+            return true;
+        else
+            return false;
     }
 
 
