@@ -332,13 +332,18 @@ class Manhour extends ActiveRecord{
         $nextDate = strtotime($nextTime);
         $result = self::statByDate($currentDate, $nextDate);
     }
+
     public static function statByProject(array $filters = array()){
 
     }
 
-    public static function statByUser($userId, array $filters = array()){
-
-    }
+    public static function statByUser($userId, $startDate, $endDate, $filters = array()){
+        $criteria = new CDbCriteria;
+        $criteria->addCondition('user_id', $userId);
+        $criteria->addBetweenCondition('start_time', $startDate, $endDate, 'AND');
+        $criteria->addBetweenCondition('end_time', $startDate, $endDate, 'AND');
+        $result = self::model()->findAll($criteria);
+     }
 
     /**
      * Filter by date
