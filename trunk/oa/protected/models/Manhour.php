@@ -353,6 +353,7 @@ class Manhour extends ActiveRecord{
      **/
     public static function statByDate($startDate, $endDate, $combo = false, array $filters = array()){
         $criteria  = new CDbCriteria;
+        $criteria->addCondition('type', self::TYPE_NORMAL);
         $criteria->addBetweenCondition('start_time', $startDate, $endDate, 'AND');
         $criteria->addBetweenCondition('end_time', $startDate, $endDate, 'AND');
         $result = self::model()->findAll($criteria);
@@ -374,6 +375,7 @@ class Manhour extends ActiveRecord{
                 $users[$record->user_id]['late_count']++;
             if(self::checkExitHelper($record))
                 $users[$record->user_id]['exit_count']++;
+            $users[$record->user_id]['attendance_count']++;
         }
     }
 
@@ -392,6 +394,11 @@ class Manhour extends ActiveRecord{
             return false;
     }
 
+    public static function checkOverTimeHelper($record){
+        if(($record->end_time - $record->start_time) > 28800)
+            return true;
+        return false;
+    }
 
 }
 ?>
