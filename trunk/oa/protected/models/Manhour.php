@@ -301,5 +301,32 @@ class Manhour extends ActiveRecord{
         }
         return $return;
     }
+
+    /** Manhour Staticstic Method **/
+    public static function statOfToday(){
+        $currentDate = strtotime(date('Y-m-d')." +8 hours");
+        $nextDate    = strtotime(date('Y-m-d')." +1 days +8 hours");
+        
+    }
+    public static function statByProject(array $filters = array()){
+
+    }
+
+    public static function statByUser($userId, array $filters = array()){
+
+    }
+
+    /**
+     * Filter by date
+     **/
+    public static function statByDate($startDate, $endDate, array $filters = array()){
+        $criteria  = new CDbCriteria;
+        $criteria->addBetweenCondition('start_time', $startDate, $endDate, 'AND');
+        $criteria->addBetweenCondition('end_time', $startDate, $endDate, 'AND');
+        $result = self::model()->findAll($criteria);
+        return $result;
+    }
+
+
 }
 ?>
