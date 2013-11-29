@@ -315,7 +315,23 @@ class Manhour extends ActiveRecord{
         return $result;
     }
 
-    
+    /**
+     * Get staticstic of any month
+     * @return CActiveRecord the records
+     **/
+    public static function statOfMonth($year, $month){
+        $currentTime = $year."-".$month."-1";
+        if($month == 12){
+            $year++;
+            $month = 1;
+        }else{
+            $month++;
+        }
+        $nextTime = $year."-".$month."-1";
+        $currentDate = strtotime($currentTime);
+        $nextDate = strtotime($nextTime);
+        $result = self::statByDate($currentDate, $nextDate);
+    }
     public static function statByProject(array $filters = array()){
 
     }
